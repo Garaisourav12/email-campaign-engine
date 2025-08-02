@@ -3,7 +3,7 @@ const cookieParser = require("cookie-parser");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const routes = require("./routes");
-const connectDB = require("./connectDb");
+const connectDB = require("./connectDB");
 const errorHandler = require("./utils/errorHandler");
 
 dotenv.config();

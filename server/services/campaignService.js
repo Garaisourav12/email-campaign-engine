@@ -1,5 +1,9 @@
 const { CampaignModel } = require("../models");
 const AppError = require("../utils/AppError");
+const { sleep, formatDuration } = require("../utils/common");
+const { io, getSocketId } = require("../socket");
+const emailTemplates = require("../utils/emailTemplates");
+const { default: sendMail } = require("../utils/sendEmail");
 
 const createCampaign = async (body, userId) => {
   const { _id } = body;
@@ -125,32 +129,114 @@ const executeCampaign = async (campaignId, userId) => {
     throw new AppError("Cannot execute campaign without customer email", 400);
   }
 
-  executeNode(campaign);
+  campaign.state = "active";
+  if (await campaign.save()) {
+    io.to(getSocketId(campaign.userId)).emit("updateCampaign", campaign);
+    executeNode(campaignId);
+  }
 };
 
-const pauseCampaign = async (campaignId, userId) => {};
+const pauseCampaign = async (campaignId, userId) => {
+  const campaign = await CampaignModel.findById(campaignId);
 
-const executeNode = async (campaign) => {
-  const node = campaign.nodes.find(
-    (n) => n.id === campaign.visitedNodes[campaign.visitedNodes.length - 1]
-  );
+  if (!campaign) {
+    throw new AppError("Campaign not found", 404);
+  }
+
+  if (userId !== campaign.userId) {
+    throw new AppError("Not authorized to access this campaign", 403);
+  }
+
+  campaign.state = "paused";
+  if (await campaign.save()) {
+    io.to(getSocketId(campaign.userId)).emit("updateCampaign", campaign);
+  }
+};
+
+const executeNode = async (campaignId) => {
+  const campaign = await CampaignModel.findById(campaignId);
+  if (campaign.state !== "active") {
+    return;
+  }
+  const node = campaign.nodes.find((n) => n.id === campaign.currentNodeId);
 
   switch (node.type) {
     case "SendEmail":
-      // RTEMP send email
+      const emailTemplate = emailTemplates[node.emailTemplateId];
+      if (!emailTemplate) {
+        console.error(`Email template ${node.emailTemplateId} not found`);
+        return;
+      }
+      await sendMail({
+        to: campaign.customerEmail,
+        subject: emailTemplate.getSubject(customerEmail.split("@")[0]),
+        html: emailTemplate.getBody(
+          customerEmail.split("@")[0],
+          campaignId,
+          node.id
+        ),
+      });
       campaign.visitedNodes.push(node.next);
-      await campaign.save();
-      executeNode(campaign);
+      break;
+    case "Wait":
+      await sleep(formatDuration(node.duration) ?? 600000); // default to 10 minutes
+      campaign.visitedNodes.push(node.next);
       break;
     case "Condition":
-      // RTEMP condition check
-      campaign.visitedNodes.push(node.next);
-      await campaign.save();
-      executeNode(campaign);
+      const dependentNode = campaign.nodes.find(
+        (n) => n.id === node.dependentOn
+      );
+
+      if (dependentNode.type !== "SendEmail") {
+        const defaultBranch = node.branches.find((b) => b.event === "default");
+        campaign.visitedNodes.push(defaultBranch.next);
+      } else {
+        const eventStates = dependentNode.events.reduce((acc, event) => {
+          acc[event.name] = event.state;
+          return acc;
+        }, {});
+
+        if (eventStates["purchase"] === "completed") {
+          const purchaseBranch = node.branches.find(
+            (b) => b.event === "purchase"
+          );
+          campaign.visitedNodes.push(purchaseBranch.next);
+        } else if (eventStates["click"] === "completed") {
+          const clickBranch = node.branches.find((b) => b.event === "click");
+          campaign.visitedNodes.push(clickBranch.next);
+        } else if (eventStates["open"] === "completed") {
+          const openBranch = node.branches.find((b) => b.event === "open");
+          campaign.visitedNodes.push(openBranch.next);
+        } else if (node.hasRemainder) {
+          const remainderBranch = node.branches.find(
+            (b) => b.event === "remainder"
+          );
+          campaign.nodes = campaign.nodes.map((n) => {
+            if (n.id === remainderBranch.next) {
+              return { ...n, hasRemainder: false };
+            } else {
+              return n;
+            }
+          });
+          campaign.visitedNodes.push(remainderBranch.next);
+        } else {
+          const defaultBranch = node.branches.find(
+            (b) => b.event === "default"
+          );
+          campaign.visitedNodes.push(defaultBranch.next);
+        }
+      }
       break;
     case "End":
       campaign.state = "ended";
       break;
+  }
+  if (await campaign.save()) {
+    io.to(getSocketId(campaign.userId)).emit("updateCampaign", campaign);
+    if (campaign.state === "ended") {
+      return;
+    }
+    executeNode(campaignId);
   }
 };
 

@@ -1,6 +1,6 @@
 // models/Campaign.ts
-const mongoose = require("mongoose");
-const validator = require("validator");
+import mongoose from "mongoose";
+import validator from "validator";
 const AppError = require("../utils/AppError");
 
 const { Schema } = mongoose;
@@ -33,6 +33,7 @@ const nodeSchema = new Schema(
       enum: ["SendEmail", "Wait", "Condition", "End"],
       required: true,
     },
+    level: { type: Number, required: true },
     next: { type: String },
     emailTemplateId: { type: String },
     events: [{ type: String }],
@@ -48,8 +49,7 @@ const nodeSchema = new Schema(
 const campaignSchema = new Schema(
   {
     name: { type: String, required: true },
-    userId: { type: String, required: true },
-    customerEmail: { type: String, default: null },
+    customerEmail: { type: String },
     state: {
       type: String,
       enum: ["default", "active", "paused", "ended"],
@@ -58,7 +58,7 @@ const campaignSchema = new Schema(
     nodes: {
       type: [nodeSchema],
       required: true,
-      default: [{ id: "n1", type: "End" }],
+      default: [{ id: "n1", type: "End", level: 1 }],
     },
     visitedNodes: {
       type: [String],
@@ -69,14 +69,23 @@ const campaignSchema = new Schema(
   { timestamps: true }
 );
 
+campaignSchema.virtual("currentNodeId").get(function () {
+  return this.visitedNodes[this.visitedNodes.length - 1];
+});
+
+campaignSchema.virtual("unreachableNodes").get(function () {
+  const currentNode = this.nodes.find((n) => n.id === this.currentNodeId);
+  return this.nodes
+    .filter((n) => {
+      return n.level <= currentNode.level;
+    })
+    .map((n) => n.id);
+});
+
 // --- VALIDATION LOGIC ---
 function validateCampaign(campaign, next) {
   if (!campaign.name) {
     return next(new AppError("Campaign name is required", 400));
-  }
-
-  if (!campaign.userId) {
-    return next(new AppError("User ID is required", 400));
   }
 
   if (!campaign.customerEmail || !validator.isEmail(campaign.customerEmail)) {
@@ -121,7 +130,11 @@ function validateCampaign(campaign, next) {
           );
         }
         if (!node.next) {
-          const newNode = { id: `n${++lastIdNum}`, type: "End" };
+          const newNode = {
+            id: `n${++lastIdNum}`,
+            type: "End",
+            level: node.level + 1,
+          };
           nodes.push(newNode);
           node.next = newNode.id;
         }
@@ -132,7 +145,11 @@ function validateCampaign(campaign, next) {
           node.duration = "1d";
         }
         if (!node.next) {
-          const newNode = { id: `n${++lastIdNum}`, type: "End" };
+          const newNode = {
+            id: `n${++lastIdNum}`,
+            type: "End",
+            level: node.level + 1,
+          };
           nodes.push(newNode);
           node.next = newNode.id;
         }
@@ -150,7 +167,11 @@ function validateCampaign(campaign, next) {
 
         const hasDefault = node.branches.some((b) => b.event === "default");
         if (!hasDefault) {
-          const newNode = { id: `n${++lastIdNum}`, type: "End" };
+          const newNode = {
+            id: `n${++lastIdNum}`,
+            type: "End",
+            level: node.level + 1,
+          };
           nodes.push(newNode);
           node.branches.push({ event: "default", next: newNode.id });
         }
@@ -164,6 +185,7 @@ function validateCampaign(campaign, next) {
               id: `n${++lastIdNum}`,
               type: "Wait",
               next: node.id,
+              level: node.level + 1,
             };
             nodes.push(waitNode);
             node.branches.push({ event: "remainder-left", next: waitNode.id });
@@ -201,4 +223,4 @@ campaignSchema.pre(["findOneAndUpdate", "findOneAndReplace"], function (next) {
   }
 });
 
-module.exports = mongoose.model("Campaign", campaignSchema);
+export default mongoose.model("Campaign", campaignSchema);

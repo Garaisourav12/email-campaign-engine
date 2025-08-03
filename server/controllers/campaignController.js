@@ -12,6 +12,26 @@ const createCampaign = async (req, res, next) => {
   }
 };
 
+const attachCustomer = async (req, res, next) => {
+  try {
+    const { customerEmail } = req.body;
+
+    if (!customerEmail) {
+      throw new AppError("Customer email is missing", 400);
+    }
+
+    // TODO: Add logic to create campaign
+    const data = await campaignService.createCampaign(req.body, req.user.id);
+    res.status(201).json({
+      success: true,
+      data,
+      message: "New campaign created for customer using existing template",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 const updateCampaign = async (req, res, next) => {
   try {
     // TODO: Add logic to update campaign by req.params.id
@@ -71,13 +91,11 @@ const getCampaignTemplates = async (req, res, next) => {
   try {
     // TODO: Return dummy/static templates (if needed)
     const data = await campaignService.getCampaignTemplates(req.user.id);
-    res
-      .status(200)
-      .json({
-        success: true,
-        data,
-        message: "Campaign Templates fetched successfully",
-      });
+    res.status(200).json({
+      success: true,
+      data,
+      message: "Campaign Templates fetched successfully",
+    });
   } catch (err) {
     next(err);
   }
@@ -86,6 +104,13 @@ const getCampaignTemplates = async (req, res, next) => {
 const executeCampaign = async (req, res, next) => {
   try {
     // TODO: Add logic to execute campaign (e.g., simulate campaign flow)
+    const data = await campaignService.executeCampaign(
+      req.params.id,
+      req.user.id
+    );
+    res
+      .status(200)
+      .json({ success: true, data, message: "Campaign executed successfully" });
   } catch (err) {
     next(err);
   }
@@ -94,6 +119,13 @@ const executeCampaign = async (req, res, next) => {
 const pauseCampaign = async (req, res, next) => {
   try {
     // TODO: Add logic to pause campaign by req.params.id
+    const data = await campaignService.pauseCampaign(
+      req.params.id,
+      req.user.id
+    );
+    res
+      .status(200)
+      .json({ success: true, data, message: "Campaign paused successfully" });
   } catch (err) {
     next(err);
   }
@@ -101,6 +133,7 @@ const pauseCampaign = async (req, res, next) => {
 
 module.exports = {
   createCampaign,
+  attachCustomer,
   updateCampaign,
   deleteCampaign,
   getCampaign,

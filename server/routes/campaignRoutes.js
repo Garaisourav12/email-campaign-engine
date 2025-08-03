@@ -3,6 +3,7 @@ const { campaignController } = require("../controllers");
 
 campaignRouter.post("/create", campaignController.createCampaign);
 campaignRouter.put("/update/:id", campaignController.updateCampaign);
+campaignRouter.post("/attachCustomer/:id", campaignController.attachCustomer);
 campaignRouter.delete("/delete/:id", campaignController.deleteCampaign);
 campaignRouter.get("/:id", campaignController.getCampaign);
 campaignRouter.get("/templates", campaignController.getCampaignTemplates);

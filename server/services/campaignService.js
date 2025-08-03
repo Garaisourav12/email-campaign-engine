@@ -2,6 +2,12 @@ const { CampaignModel } = require("../models");
 const AppError = require("../utils/AppError");
 
 const createCampaign = async (body, userId) => {
+  const { _id } = body;
+
+  if (_id) {
+    delete body["_id"];
+  }
+
   const campaign = await CampaignModel.create({
     ...body,
     userId,
@@ -32,25 +38,26 @@ const updateCampaign = async (campaignId, updates, userId) => {
   }
 
   if (state === "ended") {
-    throw new AppError("Campaign is ended", 400);
+    throw new AppError("Cannot update ended campaign", 400);
   }
 
-  // RTEMP Logic of finding unreachable nodes
-  const unreachableNodes = [];
+  if (state === "active") {
+    throw new AppError("Cannot update active campaign", 400);
+  }
+
+  if (campaign.customerEmail !== updates.customerEmail) {
+    throw new AppError("Cannot update customer email manually", 400);
+  }
 
   // unreachable nodes cannot be updated
-  unreachableNodes.forEach((node) => {
-    const updatedNode = updates.nodes.find((n) => n.id === node.id);
-    if (JSON.stringify(node) !== JSON.stringify(updatedNode)) {
-      throw new AppError(`Cannot update unreachable node ${node.id}`, 400);
+  campaign.nodes.forEach((node, index) => {
+    if (
+      campaign.unreachableNodes.includes(node.id) &&
+      JSON.stringify(node) !== JSON.stringify(updates.nodes[index])
+    ) {
+      throw new AppError("Cannot update unreachable nodes manually", 400);
     }
   });
-
-  const visitedNodes = campaign.visitedNodes.sort();
-  const updatedVisitedNodes = updates.visitedNodes.sort();
-  if (visitedNodes.join("") !== updatedVisitedNodes.join("")) {
-    throw new AppError("Cannot update visitedNodes list manually", 400);
-  }
 
   const updated = await CampaignModel.findByIdAndUpdate(campaignId, {
     $set: updates,
@@ -99,6 +106,54 @@ const getCampaignTemplates = async () => {
   });
 };
 
+const executeCampaign = async (campaignId, userId) => {
+  const campaign = await CampaignModel.findById(campaignId);
+
+  if (userId !== campaign.userId) {
+    throw new AppError("Not authorized to access this campaign", 403);
+  }
+
+  if (campaign.state === "ended") {
+    throw new AppError("Cannot execute ended campaign", 400);
+  }
+
+  if (campaign.state === "active") {
+    throw new AppError("Campaign is already active", 400);
+  }
+
+  if (campaign.customerEmail === null) {
+    throw new AppError("Cannot execute campaign without customer email", 400);
+  }
+
+  executeNode(campaign);
+};
+
+const pauseCampaign = async (campaignId, userId) => {};
+
+const executeNode = async (campaign) => {
+  const node = campaign.nodes.find(
+    (n) => n.id === campaign.visitedNodes[campaign.visitedNodes.length - 1]
+  );
+
+  switch (node.type) {
+    case "SendEmail":
+      // RTEMP send email
+      campaign.visitedNodes.push(node.next);
+      await campaign.save();
+      executeNode(campaign);
+      break;
+    case "Condition":
+      // RTEMP condition check
+      campaign.visitedNodes.push(node.next);
+      await campaign.save();
+      executeNode(campaign);
+      break;
+    case "End":
+      campaign.state = "ended";
+      break;
+  }
+};
+
 module.exports = {
   createCampaign,
   updateCampaign,
@@ -106,4 +161,6 @@ module.exports = {
   getCampaign,
   getCampaigns,
   getCampaignTemplates,
+  executeCampaign,
+  pauseCampaign,
 };

@@ -2,13 +2,14 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const dotenv = require("dotenv");
 const cors = require("cors");
+
 const routes = require("./routes");
 const connectDB = require("./connectDB");
 const errorHandler = require("./utils/errorHandler");
+const { app, server } = require("./socket");
 
 dotenv.config();
 
-const app = express();
 const port = process.env.PORT || 5000;
 const corsOptions = {
   origin: true,
@@ -22,7 +23,7 @@ app.use(cors(corsOptions));
 app.use("/api", routes);
 app.use(errorHandler);
 
-app.listen(port, async () => {
+server.listen(port, async () => {
   await connectDB();
   console.log(`Server is running on port ${port}, http://localhost:${port}`);
 });

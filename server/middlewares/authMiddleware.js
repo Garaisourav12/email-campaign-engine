@@ -2,7 +2,10 @@ const AppError = require("../utils/AppError");
 const jwt = require("jsonwebtoken");
 
 const validateToken = async (req, res, next) => {
-  const accessToken = req.cookies.accessToken;
+  const accessToken =
+    req.cookies.accessToken ||
+    req.headers.authorization ||
+    req.params.accessToken;
 
   try {
     if (!accessToken) {

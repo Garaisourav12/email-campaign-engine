@@ -48,7 +48,13 @@ const login = async (body) => {
     expiresIn: "1d",
   });
 
-  return accessToken;
+  return {
+    accessToken,
+    user: {
+      id: user._id,
+      email: user.email,
+    },
+  };
 };
 
 const getProfile = async (userId) => {

@@ -16,14 +16,14 @@ const register = async (req, res, next) => {
 
 const login = async (req, res, next) => {
   try {
-    const accessToken = await authService.login(req.body);
+    const { accessToken, user } = await authService.login(req.body);
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
     });
     res.status(200).json({
       success: true,
-      data: accessToken,
+      data: { accessToken, user },
       message: "Logged in successfully",
     });
   } catch (err) {

@@ -1,22 +1,34 @@
-// models/Campaign.ts
-import mongoose from "mongoose";
-import validator from "validator";
+const mongoose = require("mongoose");
+const validator = require("validator");
+const emailTemplates = require("../utils/emailTemplates");
 const AppError = require("../utils/AppError");
 
 const { Schema } = mongoose;
+
+const eventSchema = new Schema(
+  {
+    name: {
+      type: String,
+      enum: ["click", "open", "purchase"],
+      required: true,
+      unique: true,
+    },
+    state: {
+      type: String,
+      enum: ["pending", "completed"],
+      default: "pending",
+      required: true,
+    },
+  },
+  { _id: false }
+);
 
 // 1. Condition branches schema
 const conditionBranchSchema = new Schema(
   {
     event: {
       type: String,
-      enum: ["click", "open", "purchase", "remainder-left", "default"],
-      required: true,
-    },
-    state: {
-      type: String,
-      enum: ["pending", "completed"],
-      default: "pending",
+      enum: ["click", "open", "purchase", "remainder", "default"],
       required: true,
     },
     next: { type: String },
@@ -35,12 +47,21 @@ const nodeSchema = new Schema(
     },
     level: { type: Number, required: true },
     next: { type: String },
-    emailTemplateId: { type: String },
-    events: [{ type: String }],
+    emailTemplateId: {
+      type: String,
+      required: true,
+      enum: [
+        "welcome_email",
+        "offer_email",
+        "reminder_email",
+        "thankyou_email",
+      ],
+    },
+    events: { type: [eventSchema], required: true, default: [] },
     duration: { type: String },
     dependentOn: { type: String },
     hasRemainder: { type: Boolean },
-    branches: { type: [conditionBranchSchema] },
+    branches: { type: [conditionBranchSchema], required: true, default: [] },
   },
   { _id: false }
 );
@@ -121,14 +142,23 @@ function validateCampaign(campaign, next) {
 
     switch (node.type) {
       case "SendEmail":
-        if (!node.emailTemplateId) {
+        if (
+          !node.emailTemplateId ||
+          [
+            "welcome_email",
+            "offer_email",
+            "reminder_email",
+            "thankyou_email",
+          ].includes(node.emailTemplateId)
+        ) {
           return next(
             new AppError(
-              `SendEmail node (${node.id}) requires emailTemplateId`,
+              `SendEmail node (${node.id}) requires valid emailTemplateId`,
               400
             )
           );
         }
+
         if (!node.next) {
           const newNode = {
             id: `n${++lastIdNum}`,
@@ -178,7 +208,7 @@ function validateCampaign(campaign, next) {
 
         if (node.hasRemainder) {
           const remainderBranch = node.branches.find(
-            (b) => b.event === "remainder-left"
+            (b) => b.event === "remainder"
           );
           if (!remainderBranch) {
             const waitNode = {
@@ -188,7 +218,7 @@ function validateCampaign(campaign, next) {
               level: node.level + 1,
             };
             nodes.push(waitNode);
-            node.branches.push({ event: "remainder-left", next: waitNode.id });
+            node.branches.push({ event: "remainder", next: waitNode.id });
           }
         }
         break;
@@ -223,4 +253,4 @@ campaignSchema.pre(["findOneAndUpdate", "findOneAndReplace"], function (next) {
   }
 });
 
-export default mongoose.model("Campaign", campaignSchema);
+module.exports = mongoose.model("Campaign", campaignSchema);

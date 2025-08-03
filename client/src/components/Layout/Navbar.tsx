@@ -21,7 +21,7 @@ import ContentWrapper from "../ContentWrapper";
 import { HamburgerIcon } from "@chakra-ui/icons";
 
 const Navbar: React.FC = () => {
-  const { user, isMobile } = useGlobalContext();
+  const { user, setShowSignIn, isMobile } = useGlobalContext();
   const navigate = useNavigate();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -54,7 +54,7 @@ const Navbar: React.FC = () => {
             </Text>
 
             {/* Desktop Menu */}
-            <Flex gap={5} alignItems="center">
+            <Flex gap={{ base: 2, md: 5 }} alignItems="center">
               {!isMobile && (
                 <>
                   <NavLink to="/">
@@ -72,22 +72,32 @@ const Navbar: React.FC = () => {
                       </Box>
                     )}
                   </NavLink>
-
-                  {user ? (
-                    <Avatar
-                      size="sm"
-                      cursor="pointer"
-                      onClick={() => navigate("/profile")}
-                    />
-                  ) : (
-                    <Button
-                      colorScheme="blue"
-                      onClick={() => navigate("/signin")}
-                    >
-                      Sign In
-                    </Button>
-                  )}
                 </>
+              )}
+
+              {user ? (
+                <Avatar
+                  size="sm"
+                  cursor="pointer"
+                  onClick={() => navigate("/profile")}
+                />
+              ) : (
+                <Button
+                  colorScheme="blue"
+                  onClick={() => setShowSignIn(true)}
+                  size={{ base: "sm", md: "md" }}
+                  minW={"unset !important"}
+                  minH={"unset !important"}
+                  maxW={"unset !important"}
+                  maxH={"unset !important"}
+                  w={"fit-content !important"}
+                  h={"fit-content !important"}
+                  px={{ base: 2, md: 4 }}
+                  pt={{ base: 2, md: 2 }}
+                  pb={{ base: "10px", md: "10px" }}
+                >
+                  Sign In
+                </Button>
               )}
 
               {/* Mobile Drawer Button */}
@@ -122,28 +132,6 @@ const Navbar: React.FC = () => {
                   </Box>
                 )}
               </NavLink>
-
-              {user ? (
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    navigate("/profile");
-                    onClose();
-                  }}
-                >
-                  Profile
-                </Button>
-              ) : (
-                <Button
-                  colorScheme="blue"
-                  onClick={() => {
-                    navigate("/signin");
-                    onClose();
-                  }}
-                >
-                  Sign In
-                </Button>
-              )}
             </VStack>
           </DrawerBody>
         </DrawerContent>

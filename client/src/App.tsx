@@ -10,9 +10,11 @@ import Layout from "./components/Layout/Layout";
 import { useGlobalContext } from "./context";
 import { sleep } from "./utils/common";
 import api from "./utils/api";
+import AuthModal from "./components/AuthModal";
 
 const App: React.FC = () => {
-  const { setCheckingToken, setUser } = useGlobalContext();
+  const { setCheckingToken, setUser, showSignIn, setShowSignIn } =
+    useGlobalContext();
   useEffect(() => {
     const verifyToken = async () => {
       try {
@@ -40,6 +42,9 @@ const App: React.FC = () => {
           <Route path="/campaign/:id" element={<Campaign />} />
         </Route>
       </Routes>
+      {showSignIn && (
+        <AuthModal isOpen={showSignIn} onClose={() => setShowSignIn(false)} />
+      )}
     </Layout>
   );
 };

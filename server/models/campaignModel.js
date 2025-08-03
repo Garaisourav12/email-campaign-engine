@@ -211,14 +211,7 @@ function validateCampaign(campaign, next) {
             (b) => b.event === "remainder"
           );
           if (!remainderBranch) {
-            const waitNode = {
-              id: `n${++lastIdNum}`,
-              type: "Wait",
-              next: node.id,
-              level: node.level + 1,
-            };
-            nodes.push(waitNode);
-            node.branches.push({ event: "remainder", next: waitNode.id });
+            node.branches.push({ event: "remainder", next: node.dependentOn });
           }
         }
         break;

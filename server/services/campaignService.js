@@ -240,6 +240,26 @@ const executeNode = async (campaignId) => {
   }
 };
 
+const updateEventState = async (event, campaignId, nodeId) => {
+  const campaign = await CampaignModel.findById(campaignId);
+  campaign.nodes = campaign.nodes.map((n) => {
+    if (n.id === nodeId) {
+      return {
+        ...n,
+        events: n.events.map((e) =>
+          e.name === event ? { ...e, state: "completed" } : e
+        ),
+      };
+    } else {
+      return n;
+    }
+  });
+
+  if (await campaign.save()) {
+    io.to(getSocketId(campaign.userId)).emit("updateCampaign", campaign);
+  }
+};
+
 module.exports = {
   createCampaign,
   updateCampaign,
@@ -249,4 +269,5 @@ module.exports = {
   getCampaignTemplates,
   executeCampaign,
   pauseCampaign,
+  updateEventState,
 };

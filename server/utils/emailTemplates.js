@@ -4,7 +4,7 @@ const emailTemplates = {
     name: "Welcome Email",
     getSubject: ({ userName }) => `Welcome to our service, ${userName}!`,
     getBody: ({ userName, campaignId, nodeId }) => `
-      <img src=${`${process.env.BASE_URL}/api/templates/open?campaignId=${campaignId}&nodeId=${nodeId}`} width="1" height="1" alt="" />
+      <img src=${`${process.env.BASE_URL}/api/templates?event=open&campaignId=${campaignId}&nodeId=${nodeId}`} width="1" height="1" alt="" />
       <p>Hi ${userName},</p>
       <p>We’re thrilled to have you on board. Let’s get started!</p>
     `,
@@ -17,7 +17,7 @@ const emailTemplates = {
     getSubject: ({ userName }) =>
       `Reminder: You’ve got something pending, ${userName}`,
     getBody: ({ userName, campaignId, nodeId }) => `
-      <img src=${`${process.env.BASE_URL}/api/templates/open?campaignId=${campaignId}&nodeId=${nodeId}`} width="1" height="1" alt="" />
+      <img src=${`${process.env.BASE_URL}/api/templates?event=open&campaignId=${campaignId}&nodeId=${nodeId}`} width="1" height="1" alt="" />
       <p>Hello ${userName},</p>
       <p>Just a friendly reminder to complete your pending actions.</p>
     `,
@@ -30,7 +30,7 @@ const emailTemplates = {
     getSubject: ({ userName }) =>
       `Hey ${userName}, check out our exclusive offer!`,
     getBody: ({ userName, campaignId, nodeId }) => `
-      <img src=${`${process.env.BASE_URL}/api/templates/open?campaignId=${campaignId}&nodeId=${nodeId}`} width="1" height="1" alt="" />
+      <img src=${`${process.env.BASE_URL}/api/templates?event=open&campaignId=${campaignId}&nodeId=${nodeId}`} width="1" height="1" alt="" />
       <p>Hello ${userName},</p>
       <p>We’re excited to share something special with you. Don’t miss out!</p>
     `,

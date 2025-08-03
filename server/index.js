@@ -25,5 +25,5 @@ app.use(errorHandler);
 
 server.listen(port, async () => {
   await connectDB();
-  console.log(`Server is running on port ${port}, http://localhost:${port}`);
+  console.log(`Server is running on port ${port}, ${process.env.BASE_URL}`);
 });

@@ -3,6 +3,8 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { ChakraProvider, theme } from "@chakra-ui/react";
+import { BrowserRouter } from "react-router-dom";
+import { GlobalContextProvider } from "./context/globalConetxt";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -15,7 +17,11 @@ const ColorModeManager: any = {
 
 root.render(
   <ChakraProvider theme={theme} colorModeManager={ColorModeManager}>
-    <App />
+    <BrowserRouter>
+      <GlobalContextProvider>
+        <App />
+      </GlobalContextProvider>
+    </BrowserRouter>
   </ChakraProvider>
 );
 

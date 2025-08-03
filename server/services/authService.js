@@ -62,7 +62,10 @@ const getProfile = async (userId) => {
   if (!user) {
     throw new AppError("User not found", 404);
   }
-  return user;
+  return {
+    id: user._id,
+    email: user.email,
+  };
 };
 
 module.exports = {

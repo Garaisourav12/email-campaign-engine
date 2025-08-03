@@ -77,6 +77,7 @@ const Navbar: React.FC = () => {
 
               {user ? (
                 <Avatar
+                  name={user.email}
                   size="sm"
                   cursor="pointer"
                   onClick={() => navigate("/profile")}

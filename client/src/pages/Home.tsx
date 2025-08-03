@@ -11,15 +11,17 @@ import {
 import { AtSignIcon, TimeIcon, SettingsIcon } from "@chakra-ui/icons";
 import ContentWrapper from "../components/ContentWrapper";
 import { useNavigate } from "react-router-dom";
+import { useGlobalContext } from "../context";
 
 const Home: React.FC = () => {
+  const { setShowSignIn, user } = useGlobalContext();
   const navigate = useNavigate();
 
   return (
-    <Box bg="gray.50" py={16}>
+    <Box flex={1} bg="gray.50" py={10}>
       <ContentWrapper>
         {/* Hero Section */}
-        <VStack spacing={6} textAlign="center" mb={16}>
+        <VStack spacing={6} textAlign="center" mb={10}>
           <Heading fontSize={{ base: "3xl", md: "5xl" }} color="blue.700">
             Launch Campaigns in Minutes
           </Heading>
@@ -30,7 +32,13 @@ const Home: React.FC = () => {
           <Button
             size="lg"
             colorScheme="blue"
-            onClick={() => navigate("/campaigns")}
+            onClick={() => {
+              if (user) {
+                navigate("/campaigns");
+              } else {
+                setShowSignIn(true);
+              }
+            }}
           >
             Get Started
           </Button>

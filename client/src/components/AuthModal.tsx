@@ -10,6 +10,8 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import ModalWrapper from "./ModalWrapper";
+import api from "../utils/api";
+import { useGlobalContext } from "../context";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -17,23 +19,73 @@ interface AuthModalProps {
 }
 
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
+  const { setUser } = useGlobalContext();
   const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const toast = useToast();
+  const [loading, setLoading] = useState(false);
+  const toast = useToast({
+    position: "top",
+    duration: 3000,
+    isClosable: true,
+  });
 
-  const handleSubmit = () => {
-    toast({
-      title: `${mode === "login" ? "Logging in" : "Registering"}...`,
-      status: "info",
-      duration: 1500,
-      isClosable: true,
-    });
+  const handleSubmit = async () => {
+    setLoading(true);
+    if (mode === "login") {
+      try {
+        const response = await api.post("/auth/login", { email, password });
+        const data = response.data;
+        if (data.success) {
+          setUser(data.data.user);
+          toast({
+            title: "Login Successful!",
+            status: "success",
+          });
+        } else {
+          toast({
+            title: "Login Failed!",
+            description: data.message,
+            status: "error",
+          });
+        }
+      } catch (error) {
+        toast({
+          title: "Login Failed!",
+          description: "Something went wrong. Please try again.",
+          status: "error",
+        });
+      } finally {
+        setLoading(false);
+      }
+    } else {
+      try {
+        const response = await api.post("/auth/register", { email, password });
+        const data = response.data;
+        if (data.success) {
+          toast({
+            title: "Registration Successful!",
+            status: "success",
+          });
+        } else {
+          toast({
+            title: "Registration Failed!",
+            description: data.message,
+            status: "error",
+          });
+        }
+      } catch (error) {
+        toast({
+          title: "Registration Failed!",
+          description: "Something went wrong. Please try again.",
+          status: "error",
+        });
+      } finally {
+        setLoading(false);
+      }
+    }
 
-    // Simulated async logic
-    setTimeout(() => {
-      onClose();
-    }, 1000);
+    onClose();
   };
 
   return (
@@ -42,7 +94,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       onClose={onClose}
       title={mode === "login" ? "Sign In" : "Sign Up"}
       footer={
-        <Button colorScheme="blue" onClick={handleSubmit}>
+        <Button colorScheme="blue" onClick={handleSubmit} isLoading={loading}>
           {mode === "login" ? "Sign In" : "Sign Up"}
         </Button>
       }

@@ -20,7 +20,10 @@ const App: React.FC = () => {
       try {
         setCheckingToken(true);
         const response = await api.get("/auth/profile");
-        console.log(response.data);
+        const data = response.data;
+        if (data.success) {
+          setUser(data.data);
+        }
       } catch (error) {
         // handle error
       } finally {

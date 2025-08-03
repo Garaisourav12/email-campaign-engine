@@ -5,7 +5,7 @@ const errorHandler = async (err, req, res, next) => {
 
   if (err instanceof AppError) {
     return res
-      .status(err.statusCode)
+      .status(200)
       .json({ success: false, message: err.message, error: err.error });
   }
 

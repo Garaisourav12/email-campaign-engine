@@ -1,12 +1,13 @@
 import React from "react";
-import { Box, Flex, Text, Link } from "@chakra-ui/react";
+import { Box, Flex, Text, Link as ChakraLink } from "@chakra-ui/react";
 import ContentWrapper from "../ContentWrapper";
+import { Link } from "react-router-dom";
 
 type Props = {};
 
 const Footer: React.FC<Props> = () => {
   return (
-    <Box bg="gray.800" color="whiteAlpha.900" mt={8}>
+    <Box bg="gray.800" color="whiteAlpha.900">
       <ContentWrapper>
         <Box as="footer" py={{ base: 6, md: 8 }}>
           <Flex
@@ -25,8 +26,20 @@ const Footer: React.FC<Props> = () => {
               <Text fontWeight="bold" fontSize="md">
                 Contact Us
               </Text>
-              <Text fontSize="sm">support@campaignengine.com</Text>
-              <Text fontSize="sm">+91 98765 43210</Text>
+              <ChakraLink
+                href="mailto:garaisourav12@gmail.com"
+                fontSize="sm"
+                _hover={{ color: "blue.500", textDecoration: "underline" }}
+              >
+                garaisourav12@gmail.com
+              </ChakraLink>
+              <ChakraLink
+                href="tel:+919732224977"
+                fontSize="sm"
+                _hover={{ color: "blue.500", textDecoration: "underline" }}
+              >
+                +91 97322 24977
+              </ChakraLink>
             </Flex>
 
             {/* Links Section */}
@@ -39,14 +52,29 @@ const Footer: React.FC<Props> = () => {
               <Text fontWeight="bold" fontSize="md">
                 Quick Links
               </Text>
-              <Link href="/" fontSize="sm">
-                Home
+              <Link to="/">
+                <Text
+                  fontSize="sm"
+                  _hover={{ color: "blue.500", textDecoration: "underline" }}
+                >
+                  Home
+                </Text>
               </Link>
-              <Link href="/campaigns" fontSize="sm">
-                Campaigns
+              <Link to="/campaigns">
+                <Text
+                  fontSize="sm"
+                  _hover={{ color: "blue.500", textDecoration: "underline" }}
+                >
+                  Campaigns
+                </Text>
               </Link>
-              <Link href="/profile" fontSize="sm">
-                Profile
+              <Link to="/profile">
+                <Text
+                  fontSize="sm"
+                  _hover={{ color: "blue.500", textDecoration: "underline" }}
+                >
+                  Profile
+                </Text>
               </Link>
             </Flex>
 

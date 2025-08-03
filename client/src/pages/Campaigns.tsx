@@ -14,9 +14,11 @@ import {
   TabPanels,
   Tab,
   TabPanel,
+  Flex,
 } from "@chakra-ui/react";
 import { AddIcon, EmailIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
+import ContentWrapper from "../components/ContentWrapper";
 
 type CampaignStatus =
   | "template"
@@ -34,8 +36,8 @@ type Campaign = {
 };
 
 const TABS: { label: string; value: CampaignStatus }[] = [
-  { label: "Template", value: "template" },
   { label: "Campaign", value: "campaign" },
+  { label: "Template", value: "template" },
   { label: "Executable", value: "executable" },
   { label: "Ended", value: "ended" },
   { label: "Paused", value: "paused" },
@@ -91,86 +93,121 @@ const Campaigns: React.FC = () => {
   };
 
   const currentTab = TABS[selectedTab].value;
+  const currentTabLabel = TABS[selectedTab].label;
   const filteredCampaigns = campaigns.filter((c) => c.status === currentTab);
 
   return (
-    <Box bg="gray.50" flex={1} minH={"fit-content"} p={8}>
-      <Heading mb={6} color="blue.700">
-        {} Campaigns ({filteredCampaigns.length})
-      </Heading>
-
-      <Tabs
-        variant="soft-rounded"
-        colorScheme="blue"
-        onChange={(index) => setSelectedTab(index)}
-        isFitted
+    <Flex
+      direction={"column"}
+      bg="gray.50"
+      flex={1}
+      minH={"fit-content"}
+      py={6}
+    >
+      <ContentWrapper
+        display={"flex"}
+        flexDirection={"column"}
+        flex={1}
+        minH={"fit-content"}
       >
-        <TabList mb={4}>
-          {TABS.map((tab) => (
-            <Tab key={tab.value}>{tab.label}</Tab>
-          ))}
-        </TabList>
+        <Heading mb={6} color="blue.700">
+          {currentTabLabel === "Campaign" ? "" : currentTabLabel + " "}Campaigns
+          ({filteredCampaigns.length})
+        </Heading>
 
-        <TabPanels>
-          {TABS.map((tab, index) => (
-            <TabPanel key={tab.value} p={0}>
-              {loading ? (
-                <VStack spacing={4} mt={20}>
-                  <Spinner size="xl" color="blue.500" />
-                  <Text>Loading campaigns...</Text>
-                </VStack>
-              ) : filteredCampaigns.length === 0 ? (
-                <Box
-                  display="flex"
-                  flexDir="column"
-                  alignItems="center"
-                  justifyContent="center"
-                  minH="60vh"
-                >
-                  <Text fontSize="lg" color="gray.500" mb={4}>
-                    No {tab.label.toLowerCase()} campaigns found.
-                  </Text>
-                  <Button
-                    colorScheme="blue"
-                    leftIcon={<AddIcon />}
-                    onClick={handleCreateCampaign}
+        <Tabs
+          flex={1}
+          display={"flex"}
+          flexDirection={"column"}
+          variant="soft-rounded"
+          colorScheme="blue"
+          onChange={(index) => setSelectedTab(index)}
+          isFitted
+        >
+          <TabList
+            mb={4}
+            overflowX={"auto"}
+            sx={{
+              "&::-webkit-scrollbar": {
+                height: "0px", // Chrome, Safari, Opera
+              },
+            }}
+          >
+            {TABS.map((tab) => (
+              <Tab key={tab.value}>{tab.label}</Tab>
+            ))}
+          </TabList>
+
+          <TabPanels flex={1} display={"flex"} flexDirection={"column"}>
+            {TABS.map((tab, index) => (
+              <TabPanel
+                key={tab.value}
+                p={0}
+                flex={1}
+                display={"flex"}
+                flexDirection={"column"}
+              >
+                {loading ? (
+                  <VStack spacing={4} mt={20}>
+                    <Spinner size="xl" color="blue.500" />
+                    <Text>Loading campaigns...</Text>
+                  </VStack>
+                ) : filteredCampaigns.length === 0 ? (
+                  <Flex
+                    flex={1}
+                    flexDir="column"
+                    alignItems="center"
+                    justifyContent="center"
+                    pb={20}
                   >
-                    Create New Campaign
-                  </Button>
-                </Box>
-              ) : (
-                <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
-                  {filteredCampaigns.map((campaign) => (
-                    <Box
-                      key={campaign.id}
-                      p={6}
-                      bg="white"
-                      borderRadius="md"
-                      boxShadow="md"
+                    <Text fontSize="lg" color="gray.500" mb={4}>
+                      No {currentTab === "campaign" ? "" : currentTab + " "}
+                      campaigns found.
+                    </Text>
+                    <Button
+                      colorScheme="blue"
+                      leftIcon={<AddIcon />}
+                      onClick={handleCreateCampaign}
                     >
-                      <VStack align="start" spacing={3}>
-                        <Icon as={EmailIcon} color="blue.400" boxSize={6} />
-                        <Heading fontSize="xl">{campaign.name}</Heading>
-                        <Text fontSize="sm" color="gray.600">
-                          {campaign.description}
-                        </Text>
-                        <Button
-                          size="sm"
-                          colorScheme="blue"
-                          onClick={() => navigate(`/campaigns/${campaign.id}`)}
-                        >
-                          View Details
-                        </Button>
-                      </VStack>
-                    </Box>
-                  ))}
-                </SimpleGrid>
-              )}
-            </TabPanel>
-          ))}
-        </TabPanels>
-      </Tabs>
-    </Box>
+                      Create New Campaign
+                    </Button>
+                  </Flex>
+                ) : (
+                  <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
+                    {filteredCampaigns.map((campaign) => (
+                      <Box
+                        key={campaign.id}
+                        p={6}
+                        bg="white"
+                        borderRadius="md"
+                        boxShadow="md"
+                      >
+                        <VStack align="start" spacing={3}>
+                          <Icon as={EmailIcon} color="blue.400" boxSize={6} />
+                          <Heading fontSize="xl">{campaign.name}</Heading>
+                          <Text fontSize="sm" color="gray.600">
+                            {campaign.description}
+                          </Text>
+                          <Button
+                            size="sm"
+                            colorScheme="blue"
+                            onClick={() =>
+                              navigate(`/campaigns/${campaign.id}`)
+                            }
+                          >
+                            View Details
+                          </Button>
+                        </VStack>
+                      </Box>
+                    ))}
+                  </SimpleGrid>
+                )}
+              </TabPanel>
+            ))}
+          </TabPanels>
+        </Tabs>
+      </ContentWrapper>
+    </Flex>
   );
 };
 

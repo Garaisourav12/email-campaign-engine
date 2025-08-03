@@ -1,5 +1,5 @@
 import React from "react";
-import { Flex } from "@chakra-ui/react";
+import { Box, Flex } from "@chakra-ui/react";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 
@@ -18,7 +18,9 @@ const Layout: React.FC<Props> = ({ children }) => {
       <header className="header">
         <Navbar />
       </header>
-      <main style={{ flex: 1 }}>{children}</main>
+      <Flex direction={"column"} as="main" flex={1}>
+        {children}
+      </Flex>
       <footer>
         <Footer />
       </footer>

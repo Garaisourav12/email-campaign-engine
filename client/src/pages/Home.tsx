@@ -75,7 +75,16 @@ interface FeatureProps {
 
 const Feature: React.FC<FeatureProps> = ({ icon, title, text }) => {
   return (
-    <VStack bg="white" p={6} borderRadius="lg" boxShadow="md" align="start">
+    <VStack
+      bg="white"
+      p={6}
+      borderRadius="lg"
+      boxShadow="md"
+      align="start"
+      border={"1px solid"}
+      borderColor="gray.300"
+      spacing={4}
+    >
       <Icon as={icon} boxSize={8} color="blue.500" />
       <Heading fontSize="xl">{title}</Heading>
       <Text>{text}</Text>

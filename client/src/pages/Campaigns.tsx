@@ -19,6 +19,8 @@ import {
 import { AddIcon, EmailIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
 import ContentWrapper from "../components/ContentWrapper";
+import { dummyCampaign } from "../utils/common";
+import { ICampaign } from "../types";
 
 type CampaignStatus =
   | "template"
@@ -27,13 +29,6 @@ type CampaignStatus =
   | "ended"
   | "paused"
   | "active";
-
-type Campaign = {
-  id: number;
-  name: string;
-  description: string;
-  status: CampaignStatus;
-};
 
 const TABS: { label: string; value: CampaignStatus }[] = [
   { label: "Campaign", value: "campaign" },
@@ -45,7 +40,7 @@ const TABS: { label: string; value: CampaignStatus }[] = [
 ];
 
 const Campaigns: React.FC = () => {
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [campaigns, setCampaigns] = useState<ICampaign[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedTab, setSelectedTab] = useState<number>(0);
   const navigate = useNavigate();
@@ -56,28 +51,7 @@ const Campaigns: React.FC = () => {
 
     // Simulated data fetch
     setTimeout(() => {
-      const fetchedCampaigns: Campaign[] = [
-        {
-          id: 1,
-          name: "New Year Blast",
-          description: "Promo campaign for New Year.",
-          status: "active",
-        },
-        {
-          id: 2,
-          name: "Winter Template",
-          description: "Reusable template for winter offers.",
-          status: "template",
-        },
-        {
-          id: 3,
-          name: "Paused Sale",
-          description: "Paused mid-way due to issues.",
-          status: "paused",
-        },
-      ];
-
-      setCampaigns(fetchedCampaigns);
+      setCampaigns([dummyCampaign]);
       setLoading(false);
     }, 1500);
   }, []);
@@ -94,7 +68,15 @@ const Campaigns: React.FC = () => {
 
   const currentTab = TABS[selectedTab].value;
   const currentTabLabel = TABS[selectedTab].label;
-  const filteredCampaigns = campaigns.filter((c) => c.status === currentTab);
+  const filteredCampaigns = campaigns.filter((c) => {
+    if (currentTab === "campaign") return true;
+    if (currentTab === "template") return !c.customerEmail;
+    if (currentTab === "executable")
+      return c.customerEmail && c.state === "default";
+    if (currentTab === "ended") return c.state === "ended";
+    if (currentTab === "paused") return c.state === "paused";
+    if (currentTab === "active") return c.state === "active";
+  });
 
   return (
     <Flex
@@ -176,23 +158,22 @@ const Campaigns: React.FC = () => {
                   <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={6}>
                     {filteredCampaigns.map((campaign) => (
                       <Box
-                        key={campaign.id}
+                        key={campaign._id}
                         p={6}
                         bg="white"
                         borderRadius="md"
                         boxShadow="md"
+                        border={"1px solid"}
+                        borderColor={"gray.300"}
                       >
                         <VStack align="start" spacing={3}>
                           <Icon as={EmailIcon} color="blue.400" boxSize={6} />
                           <Heading fontSize="xl">{campaign.name}</Heading>
-                          <Text fontSize="sm" color="gray.600">
-                            {campaign.description}
-                          </Text>
                           <Button
                             size="sm"
                             colorScheme="blue"
                             onClick={() =>
-                              navigate(`/campaigns/${campaign.id}`)
+                              navigate(`/campaigns/${campaign._id}`)
                             }
                           >
                             View Details

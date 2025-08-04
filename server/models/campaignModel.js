@@ -42,7 +42,7 @@ const nodeSchema = new Schema(
     id: { type: String, required: true },
     type: {
       type: String,
-      enum: ["SendEmail", "Wait", "Condition", "End"],
+      enum: ["Start", "SendEmail", "Wait", "Condition", "End"],
       required: true,
     },
     level: { type: Number, required: true },
@@ -80,12 +80,12 @@ const campaignSchema = new Schema(
     nodes: {
       type: [nodeSchema],
       required: true,
-      default: [{ id: "n1", type: "End", level: 1 }],
+      default: [{ id: "n0", type: "Start", level: 0 }],
     },
     visitedNodes: {
       type: [String],
       required: true,
-      default: ["n1"],
+      default: ["n0"],
     },
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
@@ -119,7 +119,7 @@ function validateCampaign(campaign, next) {
   }
 
   if (!campaign.nodes || campaign.nodes.length === 0) {
-    campaign.nodes = [{ id: "n1", type: "End" }];
+    campaign.nodes = [{ id: "n0", type: "Start", level: 0 }];
   }
 
   const nodes = campaign.nodes;
@@ -140,8 +140,18 @@ function validateCampaign(campaign, next) {
         new AppError(`Invalid node type '${node.type}' in node ${node.id}`, 400)
       );
     }
-    console.log(campaign);
     switch (node.type) {
+      case "Start":
+        if (!node.next) {
+          const newNode = {
+            id: `n${++lastIdNum}`,
+            type: "End",
+            level: node.level + 1,
+          };
+          nodes.push(newNode);
+          node.next = newNode.id;
+        }
+        break;
       case "SendEmail":
         if (
           !node.emailTemplateId ||

@@ -5,22 +5,14 @@ export function transformCampaignToFlow(campaign: ICampaign): {
   nodes: Node[];
   edges: Edge[];
 } {
-  const rootNode: IRootNode = {
-    id: "root",
-    type: "Start",
-    level: 0,
-    events: [],
-    next: "n1",
-  };
   const nodeMap = new Map<string, any>();
-  const localNodes = [rootNode, ...campaign.nodes];
-  localNodes.forEach((node) => nodeMap.set(node.id, node));
+  campaign.nodes.forEach((node) => nodeMap.set(node.id, node));
 
   const levelYMap = new Map<number, number[]>();
   const nodes: Node[] = [];
   const edges: Edge[] = [];
 
-  localNodes.forEach((node) => {
+  campaign.nodes.forEach((node) => {
     const y = node.level * 150;
     const xList = levelYMap.get(node.level) || [];
     const x = xList.length * 250;
@@ -68,7 +60,7 @@ export function transformCampaignToFlow(campaign: ICampaign): {
       });
     } else if (node.type !== "End") {
       const visited =
-        node.id === "root" ||
+        node.id === "n0" ||
         campaign.visitedNodes.join("-").includes(`${node.id}-${node.next}`);
       edges.push({
         id: `${node.id}-${node.next}`,

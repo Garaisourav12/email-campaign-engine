@@ -160,6 +160,9 @@ const executeNode = async (campaignId) => {
   const node = campaign.nodes.find((n) => n.id === campaign.currentNodeId);
 
   switch (node.type) {
+    case "Start":
+      campaign.visitedNodes.push(node.next);
+      break;
     case "SendEmail":
       const emailTemplate = emailTemplates[node.emailTemplateId];
       if (!emailTemplate) {

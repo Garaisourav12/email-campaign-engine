@@ -7,18 +7,22 @@ import { ICampaignNode } from "../types";
 type Props = {
   node: ICampaignNode;
   isActive: boolean;
-  isVisible: boolean;
+  isVisited: boolean;
   isUnreachable: boolean;
   campaignState: "default" | "active" | "paused" | "ended";
 };
 
-const CustomNode: React.FC<NodeProps<Props>> = ({ data }) => {
-  const { node, isActive, isVisible, isUnreachable, campaignState } = data;
+const CustomNode: React.FC<NodeProps<Props>> = ({
+  data,
+  sourcePosition,
+  targetPosition,
+}) => {
+  const { node, isActive, isVisited, isUnreachable, campaignState } = data;
 
   const getColor = () => {
-    if (isActive) return "green.400";
-    if (isVisible) return "blue.300";
-    return "gray.200";
+    if (isActive) return "blue.200";
+    if (isVisited) return "blue.300";
+    return "white";
   };
 
   const isEditable = campaignState === "default" || !isUnreachable;
@@ -28,14 +32,14 @@ const CustomNode: React.FC<NodeProps<Props>> = ({ data }) => {
       p={3}
       bg={getColor()}
       border="2px solid"
-      borderColor={isActive ? "green.600" : isVisible ? "blue.500" : "gray.300"}
+      borderColor={isActive ? "blue.500" : "gray.300"}
       borderRadius="md"
       minW="180px"
       boxShadow="md"
       position="relative"
     >
       {/* Handle for incoming edges */}
-      <Handle type="target" position={Position.Left} />
+      <Handle type="target" position={targetPosition || Position.Left} />
 
       <VStack align="start" spacing={2}>
         <HStack justify="space-between" width="100%">
@@ -50,14 +54,14 @@ const CustomNode: React.FC<NodeProps<Props>> = ({ data }) => {
               variant="ghost"
               isDisabled={!isEditable}
             />
-            <IconButton
+            {/* <IconButton
               size="xs"
               icon={<DeleteIcon />}
               aria-label="Delete"
               variant="ghost"
               colorScheme="red"
               isDisabled={!isEditable}
-            />
+            /> */}
           </HStack>
         </HStack>
 
@@ -75,7 +79,7 @@ const CustomNode: React.FC<NodeProps<Props>> = ({ data }) => {
       </VStack>
 
       {/* Handle for outgoing edges */}
-      <Handle type="source" position={Position.Right} />
+      <Handle type="source" position={sourcePosition || Position.Right} />
     </Box>
   );
 };

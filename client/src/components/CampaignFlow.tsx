@@ -4,6 +4,7 @@ import "reactflow/dist/style.css";
 import { transformCampaignToFlow } from "../utils/transformCampaignToFlow";
 import { ICampaignNode, ICampaign } from "../types";
 import CustomNode from "./CustomNode";
+import { Box } from "@chakra-ui/react";
 
 type Props = {
   campaign: ICampaign;
@@ -14,7 +15,13 @@ const CampaignFlow: React.FC<Props> = ({ campaign }) => {
   const { nodes, edges } = transformCampaignToFlow(campaign);
 
   return (
-    <div style={{ width: "100%", height: "600px" }}>
+    <Box
+      w={"full"}
+      h={"400px"}
+      border={"1px solid"}
+      borderColor={"gray.300"}
+      borderRadius={"md"}
+    >
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -24,7 +31,7 @@ const CampaignFlow: React.FC<Props> = ({ campaign }) => {
         <Background />
         <Controls />
       </ReactFlow>
-    </div>
+    </Box>
   );
 };
 

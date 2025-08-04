@@ -33,13 +33,7 @@ export function transformCampaignToFlow(campaign: ICampaign): {
       position: { x, y },
       sourcePosition: Position.Right,
       targetPosition: Position.Left,
-      style: {
-        padding: 10,
-        border: "1px solid #ccc",
-        borderRadius: 8,
-        background: "#fff",
-        fontSize: 12,
-      },
+      style: {},
     });
 
     // Create Edges
@@ -52,6 +46,7 @@ export function transformCampaignToFlow(campaign: ICampaign): {
             target: branch.next,
             label: branch.event,
             animated: true,
+            style: { stroke: "#fbbf24", strokeWidth: 2 },
           });
         }
       });
@@ -60,6 +55,8 @@ export function transformCampaignToFlow(campaign: ICampaign): {
         id: `${node.id}-${node.next}`,
         source: node.id,
         target: node.next,
+        animated: true,
+        style: { stroke: "#fbbf24", strokeWidth: 2 },
       });
     }
   });

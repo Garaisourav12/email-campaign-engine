@@ -21,7 +21,7 @@ const CustomNode: React.FC<NodeProps<Props>> = ({
 
   const getColor = () => {
     if (isActive) return "green.300";
-    if (isVisited) return "blue.300";
+    if (isVisited) return "blue.200";
     return "white";
   };
 
@@ -31,8 +31,8 @@ const CustomNode: React.FC<NodeProps<Props>> = ({
     <Box
       p={3}
       bg={getColor()}
-      border="2px solid"
-      borderColor={isActive ? "green.500" : isVisited ? "blue.500" : "gray.300"}
+      border="1px solid"
+      borderColor={isActive ? "green.600" : isVisited ? "blue.600" : "gray.500"}
       borderRadius="md"
       minW="180px"
       boxShadow="md"

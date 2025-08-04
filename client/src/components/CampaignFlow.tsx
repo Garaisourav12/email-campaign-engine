@@ -19,7 +19,7 @@ const CampaignFlow: React.FC<Props> = ({ campaign }) => {
       w={"full"}
       h={"400px"}
       border={"1px solid"}
-      borderColor={"gray.300"}
+      borderColor={"gray.400"}
       borderRadius={"md"}
     >
       <ReactFlow

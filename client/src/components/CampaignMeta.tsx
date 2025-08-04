@@ -74,6 +74,11 @@ const CampaignMeta = ({ campaign }: Props) => {
           </Button>
         )}
       </ButtonGroup>
+      {state === "Template" && (
+        <Text fontSize="sm" mt={2} fontWeight={"normal"}>
+          <sup>*</sup>Attach a customer to make it ready for execution
+        </Text>
+      )}
     </Box>
   );
 };

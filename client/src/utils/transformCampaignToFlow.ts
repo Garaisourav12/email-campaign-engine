@@ -25,11 +25,9 @@ export function transformCampaignToFlow(campaign: ICampaign): {
       type: "customNode",
       data: {
         node,
-        isActive: node.type !== "Start" && node.id === campaign.currentNodeId,
-        isVisited:
-          node.type === "Start" || campaign.visitedNodes.includes(node.id),
-        isUnreachable:
-          node.type === "Start" || campaign.unreachableNodes.includes(node.id),
+        isActive: node.id === campaign.currentNodeId,
+        isVisited: campaign.visitedNodes.includes(node.id),
+        isUnreachable: campaign.unreachableNodes.includes(node.id),
         campaignState: campaign.state,
       },
       position: { x, y },

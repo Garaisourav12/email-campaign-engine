@@ -50,23 +50,32 @@ export function transformCampaignToFlow(campaign: ICampaign): {
     if (node.type === "Condition") {
       node?.branches?.forEach?.((branch, i) => {
         if (branch.next) {
+          const visited = campaign.visitedNodes
+            .join("-")
+            .includes(`${node.id}-${branch.next}`);
           edges.push({
             id: `${node.id}-${branch.next}-${branch.event}`,
             source: node.id,
             target: branch.next,
             label: branch.event,
             animated: true,
-            style: { stroke: "#fbbf24", strokeWidth: 2 },
+            style: {
+              stroke: visited ? "#598df4ff" : "gray.400",
+              strokeWidth: 2,
+            },
           });
         }
       });
     } else if (node.type !== "End") {
+      const visited =
+        node.id === "root" ||
+        campaign.visitedNodes.join("-").includes(`${node.id}-${node.next}`);
       edges.push({
         id: `${node.id}-${node.next}`,
         source: node.id,
         target: node.next,
         animated: true,
-        style: { stroke: "#fbbf24", strokeWidth: 2 },
+        style: { stroke: visited ? "#598df4ff" : "gray.400", strokeWidth: 2 },
       });
     }
   });

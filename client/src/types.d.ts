@@ -22,6 +22,11 @@ export interface IBaseNode {
   events: IEvent[];
 }
 
+export interface IRootNode extends IBaseNode {
+  type: "Start";
+  next: string;
+}
+
 export interface ISendEmailNode extends IBaseNode {
   type: "SendEmail";
   emailTemplateId: string;
@@ -46,6 +51,7 @@ export interface IEndNode extends IBaseNode {
 }
 
 export type ICampaignNode =
+  | IRootNode
   | ISendEmailNode
   | IWaitNode
   | IConditionNode

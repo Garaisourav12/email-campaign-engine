@@ -1,18 +1,26 @@
 import { Node, Edge, Position } from "reactflow";
-import { ICampaign } from "../types";
+import { ICampaign, IRootNode } from "../types";
 
 export function transformCampaignToFlow(campaign: ICampaign): {
   nodes: Node[];
   edges: Edge[];
 } {
+  const rootNode: IRootNode = {
+    id: "root",
+    type: "Start",
+    level: 0,
+    events: [],
+    next: "n1",
+  };
   const nodeMap = new Map<string, any>();
-  campaign.nodes.forEach((node) => nodeMap.set(node.id, node));
+  const localNodes = [rootNode, ...campaign.nodes];
+  localNodes.forEach((node) => nodeMap.set(node.id, node));
 
   const levelYMap = new Map<number, number[]>();
   const nodes: Node[] = [];
   const edges: Edge[] = [];
 
-  campaign.nodes.forEach((node) => {
+  localNodes.forEach((node) => {
     const y = node.level * 150;
     const xList = levelYMap.get(node.level) || [];
     const x = xList.length * 250;
@@ -25,9 +33,11 @@ export function transformCampaignToFlow(campaign: ICampaign): {
       type: "customNode",
       data: {
         node,
-        isActive: node.id === campaign.currentNodeId,
-        isVisited: campaign.visitedNodes.includes(node.id),
-        isUnreachable: campaign.unreachableNodes.includes(node.id),
+        isActive: node.type !== "Start" && node.id === campaign.currentNodeId,
+        isVisited:
+          node.type === "Start" || campaign.visitedNodes.includes(node.id),
+        isUnreachable:
+          node.type === "Start" || campaign.unreachableNodes.includes(node.id),
         campaignState: campaign.state,
       },
       position: { x, y },

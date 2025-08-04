@@ -20,7 +20,7 @@ const CustomNode: React.FC<NodeProps<Props>> = ({
   const { node, isActive, isVisited, isUnreachable, campaignState } = data;
 
   const getColor = () => {
-    if (isActive) return "blue.200";
+    if (isActive) return "green.300";
     if (isVisited) return "blue.300";
     return "white";
   };
@@ -32,7 +32,7 @@ const CustomNode: React.FC<NodeProps<Props>> = ({
       p={3}
       bg={getColor()}
       border="2px solid"
-      borderColor={isActive ? "blue.500" : "gray.300"}
+      borderColor={isActive ? "green.500" : isVisited ? "blue.500" : "gray.300"}
       borderRadius="md"
       minW="180px"
       boxShadow="md"
@@ -46,23 +46,27 @@ const CustomNode: React.FC<NodeProps<Props>> = ({
           <Tag size="sm" colorScheme="purple">
             {node.type}
           </Tag>
-          <HStack spacing={1}>
-            <IconButton
-              size="xs"
-              icon={<EditIcon />}
-              aria-label="Edit"
-              variant="ghost"
-              isDisabled={!isEditable}
-            />
-            {/* <IconButton
-              size="xs"
-              icon={<DeleteIcon />}
-              aria-label="Delete"
-              variant="ghost"
-              colorScheme="red"
-              isDisabled={!isEditable}
-            /> */}
-          </HStack>
+          {node.type !== "Start" && (
+            <HStack spacing={1}>
+              <IconButton
+                size="xs"
+                icon={<EditIcon />}
+                aria-label="Edit"
+                variant="ghost"
+                isDisabled={!isEditable}
+              />
+              {node.type !== "End" && (
+                <IconButton
+                  size="xs"
+                  icon={<DeleteIcon />}
+                  aria-label="Delete"
+                  variant="ghost"
+                  colorScheme="red"
+                  isDisabled={!isEditable}
+                />
+              )}
+            </HStack>
+          )}
         </HStack>
 
         {node.type === "SendEmail" && (

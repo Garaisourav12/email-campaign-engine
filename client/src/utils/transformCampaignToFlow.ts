@@ -60,7 +60,7 @@ export function transformCampaignToFlow(campaign: ICampaign): {
             label: branch.event,
             animated: true,
             style: {
-              stroke: visited ? "#598df4ff" : "gray.400",
+              stroke: visited ? "#417ef9ff" : "gray.400",
               strokeWidth: 2,
             },
           });
@@ -75,7 +75,7 @@ export function transformCampaignToFlow(campaign: ICampaign): {
         source: node.id,
         target: node.next,
         animated: true,
-        style: { stroke: visited ? "#598df4ff" : "gray.400", strokeWidth: 2 },
+        style: { stroke: visited ? "#417ef9ff" : "gray.400", strokeWidth: 2 },
       });
     }
   });

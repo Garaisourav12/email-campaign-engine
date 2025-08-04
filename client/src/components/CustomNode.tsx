@@ -39,7 +39,9 @@ const CustomNode: React.FC<NodeProps<Props>> = ({
       position="relative"
     >
       {/* Handle for incoming edges */}
-      <Handle type="target" position={targetPosition || Position.Left} />
+      {node.type !== "Start" && (
+        <Handle type="target" position={targetPosition || Position.Left} />
+      )}
 
       <VStack align="start" spacing={2}>
         <HStack justify="space-between" width="100%">
@@ -83,7 +85,9 @@ const CustomNode: React.FC<NodeProps<Props>> = ({
       </VStack>
 
       {/* Handle for outgoing edges */}
-      <Handle type="source" position={sourcePosition || Position.Right} />
+      {node.type !== "End" && (
+        <Handle type="source" position={sourcePosition || Position.Right} />
+      )}
     </Box>
   );
 };

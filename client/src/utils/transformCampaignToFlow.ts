@@ -59,9 +59,9 @@ export function transformCampaignToFlow(campaign: ICampaign): {
         }
       });
     } else if (node.type !== "End") {
-      const visited =
-        node.id === "n0" ||
-        campaign.visitedNodes.join("-").includes(`${node.id}-${node.next}`);
+      const visited = campaign.visitedNodes
+        .join("-")
+        .includes(`${node.id}-${node.next}`);
       edges.push({
         id: `${node.id}-${node.next}`,
         source: node.id,

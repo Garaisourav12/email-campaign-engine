@@ -49,7 +49,6 @@ const nodeSchema = new Schema(
     next: { type: String },
     emailTemplateId: {
       type: String,
-      required: true,
       enum: [
         "welcome_email",
         "offer_email",
@@ -70,11 +69,13 @@ const nodeSchema = new Schema(
 const campaignSchema = new Schema(
   {
     name: { type: String, required: true },
+    userId: { type: mongoose.Schema.Types.ObjectId, required: true },
     customerEmail: { type: String },
     state: {
       type: String,
       enum: ["default", "active", "paused", "ended"],
       required: true,
+      default: "default",
     },
     nodes: {
       type: [nodeSchema],
@@ -87,7 +88,7 @@ const campaignSchema = new Schema(
       default: ["n1"],
     },
   },
-  { timestamps: true }
+  { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 
 campaignSchema.virtual("currentNodeId").get(function () {
@@ -109,7 +110,7 @@ function validateCampaign(campaign, next) {
     return next(new AppError("Campaign name is required", 400));
   }
 
-  if (!campaign.customerEmail || !validator.isEmail(campaign.customerEmail)) {
+  if (campaign.customerEmail && !validator.isEmail(campaign.customerEmail)) {
     return next(new AppError("Invalid customer email", 400));
   }
 
@@ -139,7 +140,7 @@ function validateCampaign(campaign, next) {
         new AppError(`Invalid node type '${node.type}' in node ${node.id}`, 400)
       );
     }
-
+    console.log(campaign);
     switch (node.type) {
       case "SendEmail":
         if (

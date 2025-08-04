@@ -60,6 +60,7 @@ export type ICampaignNode =
 export interface ICampaign {
   _id?: string;
   name: string;
+  userId: string;
   customerEmail?: string;
   state: "default" | "active" | "paused" | "ended";
   visitedNodes: string[];

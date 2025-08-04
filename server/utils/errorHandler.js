@@ -1,7 +1,7 @@
 const AppError = require("./AppError");
 
 const errorHandler = async (err, req, res, next) => {
-  console.log(err.message);
+  console.log(err);
 
   if (err instanceof AppError) {
     return res

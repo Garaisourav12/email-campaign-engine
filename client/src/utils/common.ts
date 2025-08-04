@@ -6,6 +6,7 @@ export const sleep = (ms: number) =>
 export const dummyCampaign: ICampaign = {
   _id: "1234",
   name: "MacBook Promo Sequence",
+  userId: "12345",
   customerEmail: "customer@example.com",
   state: "default",
   visitedNodes: ["n1"],

@@ -20,7 +20,6 @@ const createCampaign = async (body, userId) => {
   if (!campaign) {
     throw new AppError("Failed to create campaign", 500);
   }
-
   return campaign;
 };
 
@@ -97,11 +96,11 @@ const getCampaign = async (campaignId, userId) => {
     throw new AppError("Not authorized to access this campaign", 403);
   }
 
-  return campaign;
+  return campaign.toObject();
 };
 
 const getCampaigns = async (userId) => {
-  return CampaignModel.find({ user: userId }).sort({ createdAt: -1 });
+  return CampaignModel.find({ userId: userId }).sort({ createdAt: -1 });
 };
 
 const getCampaignTemplates = async () => {

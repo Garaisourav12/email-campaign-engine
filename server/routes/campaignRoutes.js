@@ -7,7 +7,7 @@ campaignRouter.post("/attachCustomer/:id", campaignController.attachCustomer);
 campaignRouter.delete("/delete/:id", campaignController.deleteCampaign);
 campaignRouter.get("/:id", campaignController.getCampaign);
 campaignRouter.get("/templates", campaignController.getCampaignTemplates);
-campaignRouter.post("/", campaignController.getCampaigns);
+campaignRouter.get("/", campaignController.getCampaigns);
 campaignRouter.get("/:id/execute", campaignController.executeCampaign);
 campaignRouter.get("/:id/pause", campaignController.pauseCampaign);
 

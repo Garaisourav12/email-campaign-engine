@@ -8,6 +8,7 @@ import { ICampaignNode } from "../types";
 import EntityNotFound from "../components/EntityNotFound";
 import api from "../utils/api";
 import PageLoader from "../components/PageLoader";
+import ContentWrapper from "../components/ContentWrapper";
 
 const Campaign = () => {
   const { id } = useParams();
@@ -56,10 +57,12 @@ const Campaign = () => {
   }
 
   return (
-    <Box p={4}>
-      <CampaignMeta campaign={campaign} />
-      <CampaignFlow campaign={campaign} onNodeClick={handleNodeClick} />
-    </Box>
+    <ContentWrapper>
+      <Box py={4}>
+        <CampaignMeta campaign={campaign} />
+        <CampaignFlow campaign={campaign} onNodeClick={handleNodeClick} />
+      </Box>
+    </ContentWrapper>
   );
 };
 

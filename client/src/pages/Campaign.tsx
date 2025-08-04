@@ -60,7 +60,11 @@ const Campaign = () => {
     <ContentWrapper>
       <Box py={4}>
         <CampaignMeta campaign={campaign} />
-        <CampaignFlow campaign={campaign} onNodeClick={handleNodeClick} />
+        <CampaignFlow
+          campaign={campaign}
+          setCampaign={setCampaign as any}
+          onNodeClick={handleNodeClick}
+        />
       </Box>
     </ContentWrapper>
   );

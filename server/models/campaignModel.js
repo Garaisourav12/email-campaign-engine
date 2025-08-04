@@ -5,65 +5,52 @@ const AppError = require("../utils/AppError");
 
 const { Schema } = mongoose;
 
-const eventSchema = new Schema(
-  {
-    name: {
-      type: String,
-      enum: ["click", "open", "purchase"],
-      required: true,
-      unique: true,
-    },
-    state: {
-      type: String,
-      enum: ["pending", "completed"],
-      default: "pending",
-      required: true,
-    },
+const eventSchema = new Schema({
+  name: {
+    type: String,
+    enum: ["click", "open", "purchase"],
+    required: true,
+    unique: false,
   },
-  { _id: false }
-);
+  state: {
+    type: String,
+    enum: ["pending", "completed"],
+    default: "pending",
+    required: true,
+  },
+});
 
 // 1. Condition branches schema
-const conditionBranchSchema = new Schema(
-  {
-    event: {
-      type: String,
-      enum: ["click", "open", "purchase", "remainder", "default"],
-      required: true,
-    },
-    next: { type: String },
+const conditionBranchSchema = new Schema({
+  event: {
+    type: String,
+    enum: ["click", "open", "purchase", "remainder", "default"],
+    required: true,
+    unique: false,
   },
-  { _id: false }
-);
+  next: { type: String },
+});
 
 // 2. Node schema
-const nodeSchema = new Schema(
-  {
-    id: { type: String, required: true },
-    type: {
-      type: String,
-      enum: ["Start", "SendEmail", "Wait", "Condition", "End"],
-      required: true,
-    },
-    level: { type: Number, required: true },
-    next: { type: String },
-    emailTemplateId: {
-      type: String,
-      enum: [
-        "welcome_email",
-        "offer_email",
-        "reminder_email",
-        "thankyou_email",
-      ],
-    },
-    events: { type: [eventSchema], required: true, default: [] },
-    duration: { type: String },
-    dependentOn: { type: String },
-    hasRemainder: { type: Boolean },
-    branches: { type: [conditionBranchSchema], required: true, default: [] },
+const nodeSchema = new Schema({
+  id: { type: String, required: true, unique: true },
+  type: {
+    type: String,
+    enum: ["Start", "SendEmail", "Wait", "Condition", "End"],
+    required: true,
   },
-  { _id: false }
-);
+  level: { type: Number, required: true },
+  next: { type: String },
+  emailTemplateId: {
+    type: String,
+    enum: ["welcome_email", "offer_email", "reminder_email", "thankyou_email"],
+  },
+  events: { type: [eventSchema], required: true, default: [] },
+  duration: { type: String },
+  dependentOn: { type: String },
+  hasRemainder: { type: Boolean },
+  branches: { type: [conditionBranchSchema], required: true, default: [] },
+});
 
 // 3. Campaign schema
 const campaignSchema = new Schema(
@@ -155,7 +142,7 @@ function validateCampaign(campaign, next) {
       case "SendEmail":
         if (
           !node.emailTemplateId ||
-          [
+          ![
             "welcome_email",
             "offer_email",
             "reminder_email",
@@ -206,6 +193,17 @@ function validateCampaign(campaign, next) {
           );
         }
 
+        const dependentNode = nodes.find((n) => n.id === node.dependentOn);
+        const events = dependentNode.events;
+        events.forEach((e) => {
+          const newNode = {
+            id: `n${++lastIdNum}`,
+            type: "End",
+            level: node.level + 1,
+          };
+          nodes.push(newNode);
+          node.branches.push({ event: e.name, next: newNode.id });
+        });
         const hasDefault = node.branches.some((b) => b.event === "default");
         if (!hasDefault) {
           const newNode = {

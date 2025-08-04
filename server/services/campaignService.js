@@ -53,18 +53,24 @@ const updateCampaign = async (campaignId, updates, userId) => {
   }
 
   // unreachable nodes cannot be updated
-  campaign.nodes.forEach((node, index) => {
-    if (
-      campaign.unreachableNodes.includes(node.id) &&
-      JSON.stringify(node) !== JSON.stringify(updates.nodes[index])
-    ) {
-      throw new AppError("Cannot update unreachable nodes manually", 400);
-    }
+  // campaign.nodes.forEach((node, index) => {
+  //   if (
+  //     campaign.unreachableNodes.includes(node.id) &&
+  //     JSON.stringify(node) !== JSON.stringify(updates.nodes[index])
+  //   ) {
+  //     throw new AppError("Cannot update unreachable nodes", 400);
+  //   }
+  // });
+
+  const updatedCampaign = new CampaignModel({
+    ...updates,
   });
 
-  const updated = await CampaignModel.findByIdAndUpdate(campaignId, {
-    $set: updates,
-  });
+  const updated = await updatedCampaign.save();
+
+  // const updated = await CampaignModel.findByIdAndUpdate(campaignId, {
+  //   $set: updates,
+  // });
 
   return updated;
 };
@@ -96,7 +102,17 @@ const getCampaign = async (campaignId, userId) => {
     throw new AppError("Not authorized to access this campaign", 403);
   }
 
-  return campaign.toObject();
+  const campaignObj = campaign.toObject();
+  return {
+    ...campaignObj,
+    nodes: campaignObj.nodes.map(({ _id, events, branches, ...rest }) => {
+      return {
+        ...rest,
+        events: events.map(({ _id, ...rest }) => rest),
+        branches: branches.map(({ _id, ...rest }) => rest),
+      };
+    }),
+  };
 };
 
 const getCampaigns = async (userId) => {

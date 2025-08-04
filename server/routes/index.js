@@ -13,7 +13,13 @@ router.get("/getEmailTemplates", async (req, res, next) => {
   try {
     res.status(200).json({
       success: true,
-      data: emailTemplates,
+      data: Object.values(emailTemplates || {}).map((t) => {
+        return {
+          id: t.templateId,
+          name: t.name,
+          events: t.events,
+        };
+      }),
       message: "Email templates fetched successfully",
     });
   } catch (err) {

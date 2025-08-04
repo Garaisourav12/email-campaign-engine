@@ -13,13 +13,14 @@ export interface IBranch {
   next: string;
 }
 
-export type NodeType = "SendEmail" | "Wait" | "Condition" | "End";
+export type NodeType = "Start" | "SendEmail" | "Wait" | "Condition" | "End";
 
 export interface IBaseNode {
   id: string;
   type: NodeType;
   level: number;
   events: IEvent[];
+  branches: IBranch[];
 }
 
 export interface IRootNode extends IBaseNode {
@@ -43,7 +44,6 @@ export interface IConditionNode extends IBaseNode {
   type: "Condition";
   dependentOn: string;
   hasRemainder: boolean;
-  branches: IBranch[];
 }
 
 export interface IEndNode extends IBaseNode {

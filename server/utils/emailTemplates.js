@@ -11,18 +11,18 @@ const emailTemplates = {
     events: ["open"],
   },
 
-  reminder_email: {
-    templateId: "reminder_email",
-    name: "Reminder Email",
-    getSubject: ({ userName }) =>
-      `Reminder: You’ve got something pending, ${userName}`,
-    getBody: ({ userName, campaignId, nodeId }) => `
-      <img src=${`${process.env.BASE_URL}/api/templates?event=open&campaignId=${campaignId}&nodeId=${nodeId}`} width="1" height="1" alt="" />
-      <p>Hello ${userName},</p>
-      <p>Just a friendly reminder to complete your pending actions.</p>
-    `,
-    events: ["open"],
-  },
+  // reminder_email: {
+  //   templateId: "reminder_email",
+  //   name: "Reminder Email",
+  //   getSubject: ({ userName }) =>
+  //     `Reminder: You’ve got something pending, ${userName}`,
+  //   getBody: ({ userName, campaignId, nodeId }) => `
+  //     <img src=${`${process.env.BASE_URL}/api/templates?event=open&campaignId=${campaignId}&nodeId=${nodeId}`} width="1" height="1" alt="" />
+  //     <p>Hello ${userName},</p>
+  //     <p>Just a friendly reminder to complete your pending actions.</p>
+  //   `,
+  //   events: ["open"],
+  // },
 
   offer_email: {
     templateId: "offer_email",

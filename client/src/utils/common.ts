@@ -24,6 +24,7 @@ export const dummyCampaign: ICampaign = {
           state: "pending",
         },
       ],
+      branches: [],
       next: "n2",
     },
     {
@@ -32,6 +33,7 @@ export const dummyCampaign: ICampaign = {
       level: 2,
       duration: "2d",
       events: [],
+      branches: [],
       next: "n3",
     },
     {
@@ -62,6 +64,7 @@ export const dummyCampaign: ICampaign = {
       level: 4,
       emailTemplateId: "offer_email",
       events: [],
+      branches: [],
       next: "n6",
     },
     {
@@ -69,12 +72,14 @@ export const dummyCampaign: ICampaign = {
       type: "End",
       level: 4,
       events: [],
+      branches: [],
     },
     {
       id: "n6",
       type: "End",
       level: 5,
       events: [],
+      branches: [],
     },
   ],
 };

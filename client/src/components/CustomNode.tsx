@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Tag, Text, HStack, VStack, IconButton } from "@chakra-ui/react";
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import { Handle, Position, NodeProps } from "reactflow";
-import { ICampaignNode } from "../types";
+import { ICampaign, ICampaignNode } from "../types";
 
 type Props = {
   node: ICampaignNode;
@@ -12,11 +12,11 @@ type Props = {
   campaignState: "default" | "active" | "paused" | "ended";
 };
 
-const CustomNode: React.FC<NodeProps<Props>> = ({
-  data,
-  sourcePosition,
-  targetPosition,
-}) => {
+const CustomNode: React.FC<
+  NodeProps<Props> & {
+    onEdit: (node: ICampaignNode) => void;
+  }
+> = ({ data, sourcePosition, targetPosition, onEdit }) => {
   const { node, isActive, isVisited, isUnreachable, campaignState } = data;
 
   const getColor = () => {
@@ -50,13 +50,16 @@ const CustomNode: React.FC<NodeProps<Props>> = ({
           </Tag>
           {node.type !== "Start" && (
             <HStack spacing={1}>
-              <IconButton
-                size="xs"
-                icon={<EditIcon />}
-                aria-label="Edit"
-                variant="ghost"
-                isDisabled={!isEditable}
-              />
+              {node.type === "End" && (
+                <IconButton
+                  size="xs"
+                  icon={<EditIcon />}
+                  aria-label="Edit"
+                  variant="ghost"
+                  isDisabled={!isEditable}
+                  onClick={() => onEdit(node)}
+                />
+              )}
               {node.type !== "End" && (
                 <IconButton
                   size="xs"

@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import CampaignMeta from "../components/CampaignMeta";
 import CampaignFlow from "../components/CampaignFlow";
 import { Box, useToast } from "@chakra-ui/react";
-import { CampaignNode } from "../types";
+import { ICampaignNode } from "../types";
 import { dummyCampaign } from "../utils/common";
 
 const Campaign = () => {
@@ -12,7 +12,7 @@ const Campaign = () => {
   const [campaign] = useState(dummyCampaign);
   const toast = useToast();
 
-  const handleNodeClick = (node: CampaignNode) => {
+  const handleNodeClick = (node: ICampaignNode) => {
     toast({
       title: `Node: ${node.type}`,
       description: `Node ID: ${node.id}`,

@@ -45,7 +45,7 @@ export interface IEndNode extends IBaseNode {
   type: "End";
 }
 
-export type CampaignNode =
+export type ICampaignNode =
   | ISendEmailNode
   | IWaitNode
   | IConditionNode
@@ -57,5 +57,7 @@ export interface ICampaign {
   customerEmail?: string;
   state: "default" | "active" | "paused" | "ended";
   visitedNodes: string[];
-  nodes: CampaignNode[];
+  currentNodeId: string;
+  unreachableNodes: string[];
+  nodes: ICampaignNode[];
 }

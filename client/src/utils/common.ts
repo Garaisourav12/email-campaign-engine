@@ -9,6 +9,8 @@ export const dummyCampaign: ICampaign = {
   customerEmail: "customer@example.com",
   state: "default",
   visitedNodes: ["n1"],
+  currentNodeId: "n1",
+  unreachableNodes: ["n1"],
   nodes: [
     {
       id: "n1",

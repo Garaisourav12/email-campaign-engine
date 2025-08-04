@@ -38,7 +38,7 @@ const CreateCampaignModal: React.FC<CreateCampaignModalProps> = ({
         });
         onClose();
         setTimeout(() => {
-          navigate(`/campaigns/${data.data._id}`);
+          navigate(`/campaign/${data.data._id}`);
         }, 200);
       } else {
         toast({

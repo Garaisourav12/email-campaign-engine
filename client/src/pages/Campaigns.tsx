@@ -181,7 +181,7 @@ const Campaigns: React.FC = () => {
                               size="sm"
                               colorScheme="blue"
                               onClick={() =>
-                                navigate(`/campaigns/${campaign._id}`)
+                                navigate(`/campaign/${campaign._id}`)
                               }
                             >
                               View Details

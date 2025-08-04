@@ -42,7 +42,7 @@ const App: React.FC = () => {
         <Route element={<PrivateRoute />}>
           <Route path="/profile" element={<Profile />} />
           <Route path="/campaigns" element={<Campaigns />} />
-          <Route path="/campaigns/:id" element={<Campaign />} />
+          <Route path="/campaign/:id" element={<Campaign />} />
         </Route>
       </Routes>
       {showSignIn && (

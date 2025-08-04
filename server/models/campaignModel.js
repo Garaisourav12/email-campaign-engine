@@ -134,7 +134,7 @@ function validateCampaign(campaign, next) {
       return next(new AppError(`Node (${node.id}) is missing 'type'`, 400));
     }
 
-    const validTypes = ["SendEmail", "Wait", "Condition", "End"];
+    const validTypes = ["Start", "SendEmail", "Wait", "Condition", "End"];
     if (!validTypes.includes(node.type)) {
       return next(
         new AppError(`Invalid node type '${node.type}' in node ${node.id}`, 400)

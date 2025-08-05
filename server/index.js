@@ -7,7 +7,6 @@ const routes = require("./routes");
 const connectDB = require("./connectDB");
 const errorHandler = require("./utils/errorHandler");
 const { app, server } = require("./socket");
-const sendMail = require("./utils/sendMail");
 
 dotenv.config();
 
@@ -27,5 +26,4 @@ app.use(errorHandler);
 server.listen(port, async () => {
   await connectDB();
   console.log(`Server is running on port ${port}, ${process.env.BASE_URL}`);
-  // sendMail({ to: "garaisourav12@gmail.com", subject: "Test", html: "Test" });
 });

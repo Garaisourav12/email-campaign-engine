@@ -7,8 +7,9 @@ const emailTemplates = {
       <img src=${`${process.env.BASE_URL}/api/templates?event=open&campaignId=${campaignId}&nodeId=${nodeId}`} width="1" height="1" alt="" />
       <p>Hi ${userName},</p>
       <p>We’re thrilled to have you on board. Let’s get started!</p>
+      <a href=${`${process.env.BASE_URL}/api/templates?event=click&campaignId=${campaignId}&nodeId=${nodeId}`}>Click here to start</a>
     `,
-    events: ["open"],
+    events: ["open", "click"],
   },
 
   // reminder_email: {

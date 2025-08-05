@@ -19,7 +19,8 @@ const login = async (req, res, next) => {
     const { accessToken, user } = await authService.login(req.body);
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV !== "development",
+      sameSite: process.env.NODE_ENV === "development" ? "strict" : "none",
     });
     res.status(200).json({
       success: true,
@@ -35,7 +36,8 @@ const logout = async (req, res, next) => {
   try {
     res.clearCookie("accessToken", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV !== "development",
+      sameSite: process.env.NODE_ENV === "development" ? "strict" : "none",
     });
     res.status(200).json({ success: true, message: "Logged out successfully" });
   } catch (err) {

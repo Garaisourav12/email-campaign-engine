@@ -53,15 +53,21 @@ const Campaign = () => {
     if (socketId) {
       const socket = getSocket();
       if (socket) {
-        console.log("socketId", socket.id);
         socket.on("updateCampaign", (data) => {
-          console.log("updateCampaign", data);
           if (data.id === id) {
             setCampaign(data);
           }
         });
       }
     }
+    return () => {
+      if (socketId) {
+        const socket = getSocket();
+        if (socket) {
+          socket.off("updateCampaign");
+        }
+      }
+    };
   }, [socketId, id]);
 
   if (loading) {

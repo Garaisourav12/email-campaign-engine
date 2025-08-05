@@ -62,7 +62,7 @@ const Campaign = () => {
         });
       }
     }
-  }, [socketId]);
+  }, [socketId, id]);
 
   if (loading) {
     return <PageLoader />;

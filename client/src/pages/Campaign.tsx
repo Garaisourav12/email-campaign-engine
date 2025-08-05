@@ -17,7 +17,7 @@ const Campaign = () => {
   const [campaign, setCampaign] = useState(null);
   const [loading, setLoading] = useState(true);
   const toast = useToast();
-  const { socketId, user } = useGlobalContext();
+  const { socketId } = useGlobalContext();
 
   const handleNodeClick = (node: ICampaignNode) => {
     toast({
@@ -50,16 +50,19 @@ const Campaign = () => {
   }, [id]);
 
   useEffect(() => {
-    if (user && !socketId) {
+    if (socketId) {
       const socket = getSocket();
       if (socket) {
+        console.log("socketId", socket.id);
         socket.on("updateCampaign", (data) => {
           console.log("updateCampaign", data);
-          setCampaign(data);
+          if (data.id === id) {
+            setCampaign(data);
+          }
         });
       }
     }
-  }, [user, socketId]);
+  }, [socketId]);
 
   if (loading) {
     return <PageLoader />;

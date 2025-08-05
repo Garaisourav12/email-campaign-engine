@@ -19,7 +19,7 @@ const getSocketId = (userId) => userSocketMap[userId];
 
 // Handle new socket connection
 io.on("connection", (socket) => {
-  const userId = socket.handshake.query.userId;
+  const userId = socket.handshake.auth.userId;
 
   if (userId) {
     if (userSocketMap[userId]) {

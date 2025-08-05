@@ -31,7 +31,7 @@ const App: React.FC = () => {
         const data = response.data;
         if (data.success) {
           setUser(data.data);
-          connectSocket(data.data.user._id, (socketId) => {
+          connectSocket(data.data.id, (socketId) => {
             setSocketId(socketId);
           });
         }

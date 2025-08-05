@@ -39,7 +39,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         const data = response.data;
         if (data.success) {
           setUser(data.data.user);
-          connectSocket(data.data.user._id, (socketId) => {
+          connectSocket(data.data.user.id, (socketId) => {
             setSocketId(socketId);
           });
           toast({

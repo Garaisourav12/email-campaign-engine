@@ -133,6 +133,9 @@ const executeCampaign = async (campaignId, userId) => {
 
   campaign.state = "active";
   if (await campaign.save()) {
+    const socketids = getSocketId(campaign.userId.toString());
+    console.log(socketids);
+
     io.to(getSocketId(campaign.userId.toString())).emit(
       "updateCampaign",
       transformCampaign(campaign)

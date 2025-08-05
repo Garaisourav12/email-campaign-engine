@@ -60,7 +60,7 @@ const CustomNode: React.FC<
                   onClick={() => onEdit(node)}
                 />
               )}
-              {node.type !== "End" && (
+              {/* {node.type !== "End" && (
                 <IconButton
                   size="xs"
                   icon={<DeleteIcon />}
@@ -69,7 +69,7 @@ const CustomNode: React.FC<
                   colorScheme="red"
                   isDisabled={!isEditable}
                 />
-              )}
+              )} */}
             </HStack>
           )}
         </HStack>

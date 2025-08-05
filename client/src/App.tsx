@@ -11,10 +11,18 @@ import { useGlobalContext } from "./context";
 import { sleep } from "./utils/common";
 import api from "./utils/api";
 import AuthModal from "./components/AuthModal";
+import { connectSocket, disconnectSocket } from "./utils/socket";
 
 const App: React.FC = () => {
-  const { setCheckingToken, setUser, showSignIn, setShowSignIn } =
-    useGlobalContext();
+  const {
+    setCheckingToken,
+    setUser,
+    socketId,
+    setSocketId,
+    showSignIn,
+    setShowSignIn,
+  } = useGlobalContext();
+
   useEffect(() => {
     const verifyToken = async () => {
       try {
@@ -23,6 +31,9 @@ const App: React.FC = () => {
         const data = response.data;
         if (data.success) {
           setUser(data.data);
+          connectSocket(data.data.user._id, (socketId) => {
+            setSocketId(socketId);
+          });
         }
       } catch (error) {
         // handle error
@@ -32,6 +43,13 @@ const App: React.FC = () => {
       }
     };
     verifyToken();
+
+    return () => {
+      if (socketId)
+        disconnectSocket(() => {
+          setSocketId("");
+        });
+    };
   }, []);
 
   return (

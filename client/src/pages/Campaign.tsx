@@ -9,12 +9,15 @@ import EntityNotFound from "../components/EntityNotFound";
 import api from "../utils/api";
 import PageLoader from "../components/PageLoader";
 import ContentWrapper from "../components/ContentWrapper";
+import { useGlobalContext } from "../context";
+import { getSocket } from "../utils/socket";
 
 const Campaign = () => {
   const { id } = useParams();
   const [campaign, setCampaign] = useState(null);
   const [loading, setLoading] = useState(true);
   const toast = useToast();
+  const { socketId, user } = useGlobalContext();
 
   const handleNodeClick = (node: ICampaignNode) => {
     toast({
@@ -45,6 +48,17 @@ const Campaign = () => {
     };
     fetchCampaign();
   }, [id]);
+
+  useEffect(() => {
+    if (user && !socketId) {
+      const socket = getSocket();
+      if (socket) {
+        socket.on("updateCampaign", (data) => {
+          console.log("updateCampaign", data);
+        });
+      }
+    }
+  }, [user, socketId]);
 
   if (loading) {
     return <PageLoader />;

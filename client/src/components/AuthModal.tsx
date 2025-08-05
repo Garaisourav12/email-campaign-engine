@@ -12,6 +12,7 @@ import {
 import ModalWrapper from "./ModalWrapper";
 import api from "../utils/api";
 import { useGlobalContext } from "../context";
+import { connectSocket } from "../utils/socket";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -19,7 +20,7 @@ interface AuthModalProps {
 }
 
 const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
-  const { setUser } = useGlobalContext();
+  const { setUser, setSocketId } = useGlobalContext();
   const [mode, setMode] = useState<"login" | "register">("login");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -38,6 +39,9 @@ const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         const data = response.data;
         if (data.success) {
           setUser(data.data.user);
+          connectSocket(data.data.user._id, (socketId) => {
+            setSocketId(socketId);
+          });
           toast({
             title: "Login Successful!",
             status: "success",

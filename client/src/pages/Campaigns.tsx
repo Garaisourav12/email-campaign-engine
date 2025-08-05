@@ -7,7 +7,6 @@ import {
   Text,
   VStack,
   SimpleGrid,
-  useToast,
   Icon,
   Tabs,
   TabList,
@@ -20,7 +19,6 @@ import {
 import { AddIcon, EmailIcon } from "@chakra-ui/icons";
 import { useNavigate } from "react-router-dom";
 import ContentWrapper from "../components/ContentWrapper";
-import { dummyCampaign } from "../utils/common";
 import { ICampaign } from "../types";
 import api from "../utils/api";
 import CreateCampaignModal from "../components/CreateCampaignModal";
@@ -47,7 +45,7 @@ const Campaigns: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedTab, setSelectedTab] = useState<number>(0);
   const navigate = useNavigate();
-  const toast = useToast();
+  // const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
@@ -83,6 +81,7 @@ const Campaigns: React.FC = () => {
     if (currentTab === "ended") return c.state === "ended";
     if (currentTab === "paused") return c.state === "paused";
     if (currentTab === "active") return c.state === "active";
+    return true;
   });
 
   return (

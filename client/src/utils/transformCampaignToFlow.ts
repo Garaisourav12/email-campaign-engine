@@ -1,5 +1,5 @@
 import { Node, Edge, Position } from "reactflow";
-import { ICampaign, IRootNode } from "../types";
+import { ICampaign } from "../types";
 
 export function transformCampaignToFlow(campaign: ICampaign): {
   nodes: Node[];

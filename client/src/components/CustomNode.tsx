@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Tag, Text, HStack, VStack, IconButton } from "@chakra-ui/react";
 import { EditIcon, DeleteIcon } from "@chakra-ui/icons";
 import { Handle, Position, NodeProps } from "reactflow";
-import { ICampaign, ICampaignNode } from "../types";
+import { ICampaignNode } from "../types";
 
 type Props = {
   node: ICampaignNode;

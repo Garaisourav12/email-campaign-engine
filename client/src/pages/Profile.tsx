@@ -3,13 +3,14 @@ import { Box, Flex, Avatar, Text, Button, useToast } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { useGlobalContext } from "../context";
 import api from "../utils/api";
+import { disconnectSocket } from "../utils/socket";
 
 type Props = {};
 
 const Profile: React.FC<Props> = () => {
   const navigate = useNavigate();
   const toast = useToast();
-  const { user, setUser } = useGlobalContext();
+  const { user, setUser, setSocketId } = useGlobalContext();
   const [loading, setLoading] = React.useState(false);
 
   const handleSignOut = async () => {
@@ -18,6 +19,9 @@ const Profile: React.FC<Props> = () => {
       const response = await api.get("/auth/logout");
       const data = response.data;
       if (data.success) {
+        disconnectSocket(() => {
+          setSocketId("");
+        });
         navigate("/");
         setUser(null);
       } else {

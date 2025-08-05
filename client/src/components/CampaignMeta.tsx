@@ -10,7 +10,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { ICampaign } from "../types";
-import { EditIcon, DeleteIcon, CopyIcon } from "@chakra-ui/icons";
+import { DeleteIcon } from "@chakra-ui/icons";
 import AttachCustomerModal from "./AttachCustomerModal";
 import { useState } from "react";
 import api from "../utils/api";
@@ -46,8 +46,8 @@ const CampaignMeta = ({ campaign }: Props) => {
   const showPause = state === "Executing";
   const showResume = state === "Paused";
   const showDelete = ["Ready", "Template", "Paused", "Ended"].includes(state!);
-  const showEdit = ["Ready", "Template", "Paused"].includes(state!);
-  const showDuplicate = true;
+  // const showEdit = ["Ready", "Template", "Paused"].includes(state!);
+  // const showDuplicate = true;
 
   const deleteCampaign = async () => {
     const cnf = window.confirm(

@@ -35,9 +35,9 @@ const TABS: { label: string; value: CampaignStatus }[] = [
   { label: "Campaign", value: "campaign" },
   { label: "Template", value: "template" },
   { label: "Executable", value: "executable" },
-  { label: "Ended", value: "ended" },
   { label: "Paused", value: "paused" },
   { label: "Active", value: "active" },
+  { label: "Ended", value: "ended" },
 ];
 
 const Campaigns: React.FC = () => {

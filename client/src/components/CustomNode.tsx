@@ -46,7 +46,7 @@ const CustomNode: React.FC<
       <VStack align="start" spacing={2}>
         <HStack justify="space-between" width="100%">
           <Tag size="sm" colorScheme="purple">
-            {node.type}
+            {node.type} ({node.id})
           </Tag>
           {node.type !== "Start" && (
             <HStack spacing={1}>

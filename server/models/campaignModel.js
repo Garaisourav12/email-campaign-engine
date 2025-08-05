@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
-const emailTemplates = require("../utils/emailTemplates");
 const AppError = require("../utils/AppError");
 
 const { Schema } = mongoose;
@@ -33,7 +32,7 @@ const conditionBranchSchema = new Schema({
 
 // 2. Node schema
 const nodeSchema = new Schema({
-  id: { type: String, required: true, unique: true },
+  id: { type: String, required: true, unique: false },
   type: {
     type: String,
     enum: ["Start", "SendEmail", "Wait", "Condition", "End"],
@@ -196,6 +195,10 @@ function validateCampaign(campaign, next) {
         const dependentNode = nodes.find((n) => n.id === node.dependentOn);
         const events = dependentNode.events;
         events.forEach((e) => {
+          const eventBranch = node.branches.find((b) => b.event === e.name);
+          if (eventBranch) {
+            return;
+          }
           const newNode = {
             id: `n${++lastIdNum}`,
             type: "End",
@@ -245,14 +248,17 @@ campaignSchema.pre("save", function (next) {
 });
 
 // For update
-campaignSchema.pre(["findOneAndUpdate", "findOneAndReplace"], function (next) {
-  const update = this.getUpdate();
-  const campaign = update?.$set || update;
-  if (campaign) {
-    validateCampaign(campaign, next);
-  } else {
-    next();
+campaignSchema.pre(
+  ["findOneAndUpdate", "findOneAndReplace", "findByIdAndUpdate"],
+  function (next) {
+    const update = this.getUpdate();
+    const campaign = update?.$set || update;
+    if (campaign) {
+      validateCampaign(campaign, next);
+    } else {
+      next();
+    }
   }
-});
+);
 
 module.exports = mongoose.model("Campaign", campaignSchema);

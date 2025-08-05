@@ -111,6 +111,7 @@ const NodeEditModal: React.FC<NodeEditModalProps> = ({
       const data = response.data;
 
       if (data.success) {
+        console.log(data.data);
         setCampaign(data.data);
         toast({
           title: "Node updated successfully!",

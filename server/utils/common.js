@@ -1,3 +1,5 @@
+const ms = require("ms");
+
 const isNumber = (val) => !isNaN(val) && !isNaN(parseFloat(val));
 
 const sleep = (ms) => {

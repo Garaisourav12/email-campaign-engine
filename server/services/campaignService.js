@@ -3,7 +3,8 @@ const AppError = require("../utils/AppError");
 const { sleep, formatDuration } = require("../utils/common");
 const { io, getSocketId } = require("../socket");
 const emailTemplates = require("../utils/emailTemplates");
-const { default: sendMail } = require("../utils/sendEmail");
+const transformCampaign = require("../utils/transformCampaign");
+const sendMail = require("../utils/sendMail");
 
 const createCampaign = async (body, userId) => {
   const { _id } = body;
@@ -20,7 +21,7 @@ const createCampaign = async (body, userId) => {
   if (!campaign) {
     throw new AppError("Failed to create campaign", 500);
   }
-  return campaign;
+  return transformCampaign(campaign);
 };
 
 const updateCampaign = async (campaignId, updates, userId) => {
@@ -62,17 +63,13 @@ const updateCampaign = async (campaignId, updates, userId) => {
   //   }
   // });
 
-  const updatedCampaign = new CampaignModel({
-    ...updates,
+  await CampaignModel.findByIdAndUpdate(campaignId, {
+    $set: updates,
   });
 
-  const updated = await updatedCampaign.save();
+  const updated = await CampaignModel.findById(campaignId);
 
-  // const updated = await CampaignModel.findByIdAndUpdate(campaignId, {
-  //   $set: updates,
-  // });
-
-  return updated;
+  return transformCampaign(updated);
 };
 
 const deleteCampaign = async (campaignId, userId) => {
@@ -102,17 +99,7 @@ const getCampaign = async (campaignId, userId) => {
     throw new AppError("Not authorized to access this campaign", 403);
   }
 
-  const campaignObj = campaign.toObject();
-  return {
-    ...campaignObj,
-    nodes: campaignObj.nodes.map(({ _id, events, branches, ...rest }) => {
-      return {
-        ...rest,
-        events: events.map(({ _id, ...rest }) => rest),
-        branches: branches.map(({ _id, ...rest }) => rest),
-      };
-    }),
-  };
+  return transformCampaign(campaign);
 };
 
 const getCampaigns = async (userId) => {
@@ -128,7 +115,7 @@ const getCampaignTemplates = async () => {
 const executeCampaign = async (campaignId, userId) => {
   const campaign = await CampaignModel.findById(campaignId);
 
-  if (userId !== campaign.userId) {
+  if (userId !== campaign.userId.toString()) {
     throw new AppError("Not authorized to access this campaign", 403);
   }
 
@@ -158,7 +145,7 @@ const pauseCampaign = async (campaignId, userId) => {
     throw new AppError("Campaign not found", 404);
   }
 
-  if (userId !== campaign.userId) {
+  if (userId !== campaign.userId.toString()) {
     throw new AppError("Not authorized to access this campaign", 403);
   }
 
@@ -185,14 +172,11 @@ const executeNode = async (campaignId) => {
         console.error(`Email template ${node.emailTemplateId} not found`);
         return;
       }
+      const userName = campaign.customerEmail.split("@")[0];
       await sendMail({
         to: campaign.customerEmail,
-        subject: emailTemplate.getSubject(customerEmail.split("@")[0]),
-        html: emailTemplate.getBody(
-          customerEmail.split("@")[0],
-          campaignId,
-          node.id
-        ),
+        subject: emailTemplate.getSubject({ userName }),
+        html: emailTemplate.getBody({ userName, campaignId, nodeId: node.id }),
       });
       campaign.visitedNodes.push(node.next);
       break;

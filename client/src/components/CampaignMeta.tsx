@@ -37,6 +37,7 @@ const getCampaignState = (campaign: ICampaign) => {
 const CampaignMeta = ({ campaign }: Props) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [loading, setLoading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const toast = useToast({ position: "top", duration: 3000, isClosable: true });
   const navigate = useNavigate();
   const state = getCampaignState(campaign);
@@ -55,7 +56,7 @@ const CampaignMeta = ({ campaign }: Props) => {
     );
     if (!cnf) return;
     try {
-      setLoading(true);
+      setDeleting(true);
       const response = await api.delete(`/campaigns/delete/${campaign._id}`);
       const data = response.data;
       if (data.success) {
@@ -80,7 +81,7 @@ const CampaignMeta = ({ campaign }: Props) => {
         status: "error",
       });
     } finally {
-      setLoading(false);
+      setDeleting(false);
     }
   };
 
@@ -200,17 +201,29 @@ const CampaignMeta = ({ campaign }: Props) => {
             </Button>
           )}
           {showStart && (
-            <Button colorScheme="green" onClick={startExecution}>
+            <Button
+              colorScheme="green"
+              onClick={startExecution}
+              isLoading={loading}
+            >
               Start
             </Button>
           )}
           {showPause && (
-            <Button colorScheme="orange" onClick={pauseExecution}>
+            <Button
+              colorScheme="orange"
+              onClick={pauseExecution}
+              isLoading={loading}
+            >
               Pause
             </Button>
           )}
           {showResume && (
-            <Button colorScheme="green" onClick={resumeExecution}>
+            <Button
+              colorScheme="green"
+              onClick={resumeExecution}
+              isLoading={loading}
+            >
               Resume
             </Button>
           )}
@@ -224,7 +237,7 @@ const CampaignMeta = ({ campaign }: Props) => {
               leftIcon={<DeleteIcon />}
               colorScheme="red"
               variant="outline"
-              isLoading={loading}
+              isLoading={deleting}
               onClick={deleteCampaign}
             >
               Delete

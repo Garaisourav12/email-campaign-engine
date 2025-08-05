@@ -103,6 +103,17 @@ const Campaigns: React.FC = () => {
             {currentTabLabel === "Campaign" ? "" : currentTabLabel + " "}
             Campaigns ({filteredCampaigns.length})
           </Heading>
+          {filteredCampaigns.length !== 0 && (
+            <Button
+              colorScheme="blue"
+              leftIcon={<AddIcon />}
+              onClick={handleCreateCampaign}
+              mb={6}
+              alignSelf={"flex-start"}
+            >
+              Create New Campaign
+            </Button>
+          )}
 
           <Tabs
             flex={1}

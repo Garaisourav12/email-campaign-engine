@@ -36,7 +36,7 @@ const getCampaignState = (campaign: ICampaign) => {
 
 const CampaignMeta = ({ campaign }: Props) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [deleting, setDeleting] = useState(false);
+  const [loading, setLoading] = useState(false);
   const toast = useToast({ position: "top", duration: 3000, isClosable: true });
   const navigate = useNavigate();
   const state = getCampaignState(campaign);
@@ -55,7 +55,7 @@ const CampaignMeta = ({ campaign }: Props) => {
     );
     if (!cnf) return;
     try {
-      setDeleting(true);
+      setLoading(true);
       const response = await api.delete(`/campaigns/delete/${campaign._id}`);
       const data = response.data;
       if (data.success) {
@@ -80,7 +80,101 @@ const CampaignMeta = ({ campaign }: Props) => {
         status: "error",
       });
     } finally {
-      setDeleting(false);
+      setLoading(false);
+    }
+  };
+
+  const startExecution = async () => {
+    const cnf = window.confirm("Are you sure you want to start this campaign?");
+    if (!cnf) return;
+    try {
+      setLoading(true);
+      const response = await api.get(`/campaigns/${campaign._id}/execute`);
+      const data = response.data;
+      if (data.success) {
+        toast({
+          title: "Campaign started successfully!",
+          status: "success",
+        });
+      } else {
+        toast({
+          title: "Failed to start campaign!",
+          description: data.message || "Something went wrong",
+          status: "error",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Failed to start campaign!",
+        description: "Something went wrong. Please try again.",
+        status: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const pauseExecution = async () => {
+    const cnf = window.confirm(
+      "Are you sure you want to pause this campaign execution?"
+    );
+    if (!cnf) return;
+    try {
+      setLoading(true);
+      const response = await api.get(`/campaigns/${campaign._id}/pause`);
+      const data = response.data;
+      if (data.success) {
+        toast({
+          title: "Campaign execution paused successfully!",
+          status: "success",
+        });
+      } else {
+        toast({
+          title: "Failed to pause campaign execution!",
+          description: data.message || "Something went wrong",
+          status: "error",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Failed to pause campaign execution!",
+        description: "Something went wrong. Please try again.",
+        status: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const resumeExecution = async () => {
+    const cnf = window.confirm(
+      "Are you sure you want to resume this campaign?"
+    );
+    if (!cnf) return;
+    try {
+      setLoading(true);
+      const response = await api.get(`/campaigns/${campaign._id}/execute`);
+      const data = response.data;
+      if (data.success) {
+        toast({
+          title: "Campaign resumed successfully!",
+          status: "success",
+        });
+      } else {
+        toast({
+          title: "Failed to resume campaign!",
+          description: data.message || "Something went wrong",
+          status: "error",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Failed to resume campaign!",
+        description: "Something went wrong. Please try again.",
+        status: "error",
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -105,9 +199,21 @@ const CampaignMeta = ({ campaign }: Props) => {
               Attach Customer
             </Button>
           )}
-          {showStart && <Button colorScheme="green">Start</Button>}
-          {showPause && <Button colorScheme="orange">Pause</Button>}
-          {showResume && <Button colorScheme="green">Resume</Button>}
+          {showStart && (
+            <Button colorScheme="green" onClick={startExecution}>
+              Start
+            </Button>
+          )}
+          {showPause && (
+            <Button colorScheme="orange" onClick={pauseExecution}>
+              Pause
+            </Button>
+          )}
+          {showResume && (
+            <Button colorScheme="green" onClick={resumeExecution}>
+              Resume
+            </Button>
+          )}
           {/* {showEdit && (
           <Button leftIcon={<EditIcon />} colorScheme="blue" variant="outline">
             Edit
@@ -118,7 +224,7 @@ const CampaignMeta = ({ campaign }: Props) => {
               leftIcon={<DeleteIcon />}
               colorScheme="red"
               variant="outline"
-              isLoading={deleting}
+              isLoading={loading}
               onClick={deleteCampaign}
             >
               Delete

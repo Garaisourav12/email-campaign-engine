@@ -253,6 +253,9 @@ const executeNode = async (campaignId) => {
 
 const updateEventState = async (event, campaignId, nodeId) => {
   const campaign = await CampaignModel.findById(campaignId);
+  if (!campaign) {
+    throw new AppError("Campaign not found", 404);
+  }
   campaign.nodes = campaign.nodes.map((n) => {
     if (n.id === nodeId) {
       return {

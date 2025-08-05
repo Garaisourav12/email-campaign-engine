@@ -133,7 +133,10 @@ const executeCampaign = async (campaignId, userId) => {
 
   campaign.state = "active";
   if (await campaign.save()) {
-    io.to(getSocketId(campaign.userId)).emit("updateCampaign", campaign);
+    io.to(getSocketId(campaign.userId.toString())).emit(
+      "updateCampaign",
+      transformCampaign(campaign)
+    );
     executeNode(campaignId);
   }
 };
@@ -151,7 +154,10 @@ const pauseCampaign = async (campaignId, userId) => {
 
   campaign.state = "paused";
   if (await campaign.save()) {
-    io.to(getSocketId(campaign.userId)).emit("updateCampaign", campaign);
+    io.to(getSocketId(campaign.userId.toString())).emit(
+      "updateCampaign",
+      transformCampaign(campaign)
+    );
   }
 };
 
@@ -234,7 +240,10 @@ const executeNode = async (campaignId) => {
       break;
   }
   if (await campaign.save()) {
-    io.to(getSocketId(campaign.userId)).emit("updateCampaign", campaign);
+    io.to(getSocketId(campaign.userId.toString())).emit(
+      "updateCampaign",
+      transformCampaign(campaign)
+    );
     if (campaign.state === "ended") {
       return;
     }
@@ -258,7 +267,10 @@ const updateEventState = async (event, campaignId, nodeId) => {
   });
 
   if (await campaign.save()) {
-    io.to(getSocketId(campaign.userId)).emit("updateCampaign", campaign);
+    io.to(getSocketId(campaign.userId.toString())).emit(
+      "updateCampaign",
+      transformCampaign(campaign)
+    );
   }
 };
 

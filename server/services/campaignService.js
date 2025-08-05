@@ -220,7 +220,7 @@ const executeNode = async (campaignId) => {
             (b) => b.event === "remainder"
           );
           campaign.nodes = campaign.nodes.map((n) => {
-            if (n.id === remainderBranch.next) {
+            if (n.id === node.id) {
               return { ...n, hasRemainder: false };
             } else {
               return n;

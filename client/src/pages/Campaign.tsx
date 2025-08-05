@@ -55,6 +55,7 @@ const Campaign = () => {
       if (socket) {
         socket.on("updateCampaign", (data) => {
           console.log("updateCampaign", data);
+          setCampaign(data);
         });
       }
     }

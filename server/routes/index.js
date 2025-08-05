@@ -27,9 +27,9 @@ router.get("/getEmailTemplates", async (req, res, next) => {
   }
 });
 router.get("/templates", async (req, res, next) => {
-  const { event, campainId, nodeId } = req.params;
+  const { event, campaignId, nodeId } = req.params;
   try {
-    await campaignService.updateEventState(event, campainId, nodeId);
+    await campaignService.updateEventState(event, campaignId, nodeId);
     res.status(200).json({
       success: true,
       data: null,
